@@ -26,13 +26,5 @@ avatar = "logo.png"
     name = "Tags"
     url = "/tags/"
     weight = 2
-  [[menu.main]]
-    identifier = "about"
-    name = "About"
-    url = "/about/"
-    weight = 3
-  [[menu.main]]
-    identifier = "posts"
-    name = "Posts"
-    url = "/post/"
-    weight = 3
+
+
