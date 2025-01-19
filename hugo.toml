@@ -6,7 +6,7 @@ theme = "hugo-theme-m10c"
 [params]
 author = "Per Thomas Jahr"
 description = "Join me on my journey into the world of amateur radio and electronics. As a newly licensed operator, I document my projects, experiments, and discoveries — mostly for myself, but with the hope that you might find something useful along the way."
-avatar = "logo.png"
+avatar = "logo.webp"
 
  [params.header]
 
