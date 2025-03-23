@@ -1,5 +1,5 @@
 start-hugo:
-	hugo server --buildDrafts --disableFastRender
+	hugo server --buildDrafts --disableFastRender -F
 
 install-pylanguagetools:
 	pip install pylanguagetool@0.10.0
