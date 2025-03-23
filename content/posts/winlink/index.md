@@ -93,7 +93,7 @@ The connection dialog in Pat is as seen below. It includes a very convenient fea
 
 _The Pat connection dialog._
 
-The overview page from [LA3F](https://la3f.no/index.php/faste-installasjoner/winlink) also mentions a _Winlink-digipeater/KAnode (LA3F-10 via LD1FV/LD1FV-5) Voksenkollen, Oslo_.  This is a lot closer to my QTH compared to `LA3F-10`. As the name implies, a digipeater repeats digital signals at the same frequency as it was received. I tried with both `LD1FV` and `LD1FV-5` as targets, but still, no successful Winlink connection was made.
+The overview page from [LA3F](https://la3f.no/index.php/faste-installasjoner/winlink) also mentions a Winlink digipeater (LA3F-10 via LD1FV/LD1FV-5) at Voksenkollen, Oslo.  This is a lot closer to my QTH compared to `LA3F-10`. As the name implies, a digipeater repeats digital signals at the same frequency as it was received. I tried with both `LD1FV` and `LD1FV-5` as targets, but still, no successful Winlink connection was made.
 
 What could be wrong? After a lot of googling, I came across a [post](https://groups.io/g/KM4ACK-Pi/topic/using_pat_winlink_with/77965522) to a mailing list asking exactly what I was looking for:
 

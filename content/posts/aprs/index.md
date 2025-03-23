@@ -19,7 +19,7 @@ Then it was just a matter of configuring the `direwolf.conf` with this line:
 PBEACON delay=01:00 every=15 symbol="/-" lat=59^56.60N long=010^46.60E power=5 alt=60 gain=2.15 comment="APRS test" via=WIDE1-1
 ```
 
-For Norway, the frequency is 144.800 MHz. This can be found in the [band plans for Norway that NRRL maintains](https://nrrl.no/tema/bandplaner/).
+For Norway, the frequency is 144,800 MHz. This can be found in the [band plans for Norway that NRRL maintains](https://nrrl.no/tema/bandplaner/).
 
 With this setup, my position will be transmitted every 15 minutes, and I can also receive messages. The part where it says `via=WIDE1-1` means that the APRS packet can be forwarded by a maximum of one digipeater.
 

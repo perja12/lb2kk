@@ -9,4 +9,6 @@ process-images:
 	find static -iname "*.jpg" -or -iname "*.png" -exec exiftool -all= {} \;
 
 spell-check:
-	find content -iname "*.md" -exec pylanguagetool -m no -l en-US -t md {} \;
+	hugo --buildDrafts -F -D --cleanDestinationDir
+	find public/posts -iname "*.html" -exec pylanguagetool -m no -l en-US --pwl pwl.txt -t html {} \;
+	pylanguagetool -m no -l en-US --pwl pwl.txt -t html public/posts/index.html
