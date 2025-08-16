@@ -1,0 +1,104 @@
+/* Dark-friendly tables for m10c */
+
+/* Global table baseline */
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1rem 0;
+}
+
+/* Borders: faint, high-DPI friendly; text inherits your theme's light color */
+th, td {
+  padding: 0.6rem 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);  /* subtle line on dark */
+  color: inherit;
+}
+
+/* Header: a touch lighter than the page background */
+thead th {
+  background: rgba(255, 255, 255, 0.06);
+  font-weight: 600;
+}
+
+/* Zebra striping + hover to guide the eye */
+tbody tr:nth-child(odd)  { background: rgba(255, 255, 255, 0.03); }
+tbody tr:hover           { background: rgba(255, 255, 255, 0.08); }
+
+/* Optional caption tone */
+caption { color: rgba(255, 255, 255, 0.65); }
+
+/* Optional: a rounded “card-like” variant you can opt into */
+.table--rounded {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 8px;
+  overflow: hidden;           /* keeps header corners rounded */
+}
+.table--rounded th, .table--rounded td {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+}
+.table--rounded tr:last-child td { border-bottom: 0; }
+
+/* Optional: horizontally scrollable tables (opt-in class) */
+.table--scroll {
+  display: block;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  white-space: nowrap;        /* prevent squishing narrow columns */
+}
+
+/* Card wrapper */
+.post-card {
+  background: rgba(255,255,255,0.035);     /* faint tint on dark */
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  overflow: hidden;                         /* clip image corners */
+  transition: background .2s ease, border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+}
+
+/* Make the image feel part of the card */
+.post-card__thumb img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Space for the text area */
+.post-card__body { padding: .75rem .9rem 1rem; }
+
+/* Subtle hover/active states */
+.post-card:hover {
+  background: rgba(255,255,255,0.055);
+  border-color: rgba(255,255,255,0.14);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.28);
+  transform: translateY(-1px);
+}
+.post-card:active { transform: translateY(0); }
+
+/* Title/link tweaks (stay readable on dark) */
+.post-card__title { margin: .5rem 0 .25rem; font-size: 1.15rem; }
+.post-card__title a { text-decoration: none; }
+
+/* Optional: a stronger visual link between image and text via a top divider on the body */
+.post-card__body { border-top: 1px solid rgba(255,255,255,0.06); }
+
+/* Keyboard accessibility: show a visible focus ring when tabbing */
+.post-card:focus-within {
+  outline: 2px solid rgba(255,255,255,0.35);
+  outline-offset: 2px;
+}
+
+/* Respect users who prefer less motion */
+@media (prefers-reduced-motion: reduce) {
+  .post-card { transition: none; }
+}
+
+/* spacing between cards via the grid container */
+.posts {
+  display: grid;
+  gap: 1.25rem; /* space between rows & columns */
+}
+
+/* two columns on larger screens */
+
+/* when using gap, keep card margins at 0 so spacing isn't doubled */
+.post-card { margin: 0; }

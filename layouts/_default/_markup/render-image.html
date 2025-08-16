@@ -1,24 +1,43 @@
 {{- $u := urls.Parse .Destination -}}
 {{- $src := $u.String -}}
 {{- if not $u.IsAbs -}}
-{{- $path := strings.TrimPrefix "./" $u.Path }}
-{{- with or (.PageInner.Resources.Get $path) (resources.Get $path) -}}
-{{- with .Process "webp" -}}
-{{- $src = .RelPermalink -}}
-{{- with $u.RawQuery -}}
-{{- $src = printf "%s?%s" $src . -}}
-{{- end -}}
-{{- with $u.Fragment -}}
-{{- $src = printf "%s#%s" $src . -}}
-{{- end -}}
-{{- end -}}
-{{- end -}}
-{{- end -}}
-{{- $attributes := merge .Attributes (dict "alt" .Text "src" $src "title" (.Title | transform.HTMLEscape)) -}}
-<img loading="lazy"
-    {{- range $k, $v := $attributes -}}
-    {{- if $v -}}
-    {{- printf " %s=%q" $k $v | safeHTMLAttr -}}
+  {{- $path := strings.TrimPrefix "./" $u.Path -}}
+  {{- with or (.PageInner.Resources.Get $path) (resources.Get $path) -}}
+    {{- /* Build filters: AutoOrient first, then encode to WebP */ -}}
+    {{- $filters := slice
+        images.AutoOrient
+        (images.Process "webp")
+      -}}
+    {{- with images.Filter $filters . -}}
+      {{- $src = .RelPermalink -}}
+      {{- with $u.RawQuery -}}
+        {{- $src = printf "%s?%s" $src . -}}
+      {{- end -}}
+      {{- with $u.Fragment -}}
+        {{- $src = printf "%s#%s" $src . -}}
+      {{- end -}}
     {{- end -}}
-    {{- end -}}>
-{{- /**/ -}}
+  {{- end -}}
+{{- end -}}
+
+{{/* Defaults we want even if no attributes were provided */}}
+{{- $defaults := dict
+    "alt"   .Text
+    "title" (.Title | transform.HTMLEscape)
+    "loading" "lazy"
+-}}
+
+{{/* Merge order:
+      1) defaults
+      2) user-supplied attributes from Markdown (width, height, class, style, even alt/title if they want)
+      3) enforce the processed src so users can't override it by mistake
+*/}}
+{{- $attributes := merge $defaults .Attributes -}}
+{{- $attributes = merge $attributes (dict "src" $src) -}}
+
+<img
+  {{- range $k, $v := $attributes -}}
+    {{- if $v -}}
+      {{- printf " %s=%q" $k $v | safeHTMLAttr -}}
+    {{- end -}}
+  {{- end -}}>

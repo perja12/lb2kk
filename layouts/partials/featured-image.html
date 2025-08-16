@@ -1,0 +1,29 @@
+{{/* Picks an image for a post and outputs a processed <img> */}}
+{{- $p := . -}}
+{{- $img := false -}}
+
+{{/* Priority: front matter 'featured', then featured cover thumbnail*, then first image */}}
+{{- with $p.Params.featured }}
+  {{- $img = $p.Resources.GetMatch . -}}
+{{- end -}}
+{{- if not $img }}
+  {{- $img = $p.Resources.GetMatch "{featured,cover,thumbnail}*" -}}
+{{- end -}}
+{{- if not $img }}
+  {{- $imgs := $p.Resources.ByType "image" -}}
+  {{- if gt (len $imgs) 0 }}{{ $img = index $imgs 0 }}{{ end -}}
+{{- end -}}
+
+{{- if $img -}}
+  {{- $filters := slice
+        images.AutoOrient
+        (images.Process "fill 640x360 webp q75")
+     -}}
+  {{- with images.Filter $filters $img -}}
+    <img
+      src="{{ .RelPermalink }}"
+      alt="{{ $p.Title }}"
+      loading="lazy"
+      width="{{ .Width }}" height="{{ .Height }}">
+  {{- end -}}
+{{- end -}}

@@ -28,3 +28,12 @@ avatar = "logo.webp"
     weight = 2
 
 
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.parser]
+      wrapStandAloneImageWithinParagraph = false
+      [markup.goldmark.parser.attribute]
+        block = true
+        title = true
+
+
