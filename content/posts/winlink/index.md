@@ -3,10 +3,10 @@ title = 'Winlink, Pat and Yaesu FT-70D'
 date = 2025-01-03T23:18:50+01:00
 draft = false
 summary = "Read more about how I finally managed to send and read emails using a VHF radio with Winlink."
-tags = ['winlink', 'pat', 'dire wolf', 'ax.25', 'SignaLink']
+tags = ['winlink', 'pat', 'dire wolf', 'ax.25', 'SignaLink', 'vhf', 'linux']
 +++
 
-# Winlink with Pat and Yaesu FT-70D
+# Winlink on Linux using Pat and Yaesu FT-70D (VHF)
 
 ![VHF Winlink hardware setup.](winlink_hardware_setup.jpg)
 

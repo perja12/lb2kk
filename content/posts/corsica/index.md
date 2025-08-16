@@ -2,7 +2,7 @@
 title = 'Vacation in Corsica with amateur radio'
 date = 2025-08-11T17:40:44+02:00
 draft = false
-tags = ['qrp', 'qmx']
+tags = ['qrp', 'qmx', 'nanovna', 'efhw', 'travel report']
 featured = "featured.jpg"
 +++
 
