@@ -76,7 +76,7 @@ Also, I mute the built-in sound card just to make sure that no other sounds (lik
 
 ## Unsuccessful first tests
 
-When I had configured all of this, I of course, wanted to test sending and receiving emails via Winlink. The most up-to-date overview of Winlink in Norway is from [LA3F](https://la3f.no/index.php/faste-installasjoner/winlink). From this overview, I picked LA3F-10 as it is closest to QTH. It uses _Packet 1200_ and _144.025 MHz_ as frequency.
+When I had configured all of this, I of course, wanted to test sending and receiving emails via Winlink. The most up-to-date overview of Winlink in Norway is from [LA3F](https://la3f.no/index.php/faste-installasjoner/winlink). From this overview, I picked LA3F-10 as it is closest to QTH. It uses _Packet 1200_ and _144.925 MHz_ as frequency.
 
 Pat can be used from the command line or via a UI in the web browser. I found the UI to be easy to use. For this to work, Pat has to be started with the parameter `http` like this:
 
