@@ -200,3 +200,48 @@ procs+=("pat")
 wait
 ```
 
+## Checklist for Winlink on VHF and IC-705
+
+_Added 31.12.2025_
+
+* Check the antenna system:
+  * Is the SWR fine? A high SWR can cause problems for the USB interface of the laptop.
+  * Use a USB cable with ferrites - preferably on both ends.
+  * Do you have line of sight to the node you are connecting to?
+* Use the mode `FM-D`(FM Data) on the IC-705. Set squelch to fully open. Use preamp if needed.
+* For Norway: use the frequency 144,925 MHz. [LA3F has a page with frequencies to be used in Norway](https://la3f.no/index.php/faste-installasjoner/winlink).
+* Try connecting directly to the node without a Digipeater if possible.
+
+## Troubleshooting
+
+Check the Dire Wolf logs:
+
+```
+D: LA3F-10 audio level = 30(7/3)    _____|||_
+```
+
+This line logs the audio level of the received station. The numbers in the parentheses are the strengths of the mark and space tones. For an ideal transmission, the numbers should be about the same.
+In this example, the first level (30) is quite a bit larger than the 7 and 3. This indicates a bad signal to noise ratio.
+
+From the [Dire Wolf User Guide](https://raw.githubusercontent.com/wb2osz/direwolf/dev/doc/User-Guide.pdf):
+
+> “level” refers to the overall audio level. This is not calibrated to anything. It is just useful to see
+> if someone’s signal volume is significantly different than most other people. It is suggested that
+> you set the audio input level so that most stations average somewhere around 50. This
+> provides plenty of dynamic range and avoids saturating the audio interface A/D converter. If
+> you see outliers, it would be a friendly gesture to inform them.
+>
+> … audio level = 52(13/8) …
+>
+> “(13/8)” is the relative strength between the mark and space tones for AFSK modems. This is
+> mostly a left over from researching why some packets, that sounded fine, could not be decoded.
+> Recommended reading: A-Better-Packet-Demodulator-Part-1-1200-baud.pdf & A-CloserLook-at-the WA8LMF-TNC-Test-CD.pdf
+
+
+```
+D: [0.6] LA3F-10>LB2KK:(RR res, n(r)=2, f=1)
+```
+
+This is AX.25 control frame:
+* `RR res`: Receive Ready response, LA3F-10 is ready to receive.
+* You can follow the sequence of packets being exchanged by looking at the `n(r)`or `n(s)` lines. Look out for packets that are rejected (`rej`).
