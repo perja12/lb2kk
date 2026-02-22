@@ -1,0 +1,1708 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CW USB Adapter Config</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    :root {
+      font-family: system-ui, -apple-system, Segoe UI, sans-serif;
+      --bg: #f8fafc;
+      --bg-grad: linear-gradient(135deg, #f8fafc 0%, #eef2ff 50%, #f8fafc 100%);
+      --card: #fff;
+      --card-border: #e2e8f0;
+      --text: #0f172a;
+      --muted: #64748b;
+      --accent: #0ea5e9;
+      --pill-bg: #eef2ff;
+      --pill-text: #312e81;
+      --input-border: #cbd5e1;
+      --secondary-bg: #e0f2fe;
+      --secondary-text: #0f172a;
+      --secondary-border: #bae6fd;
+      --secondary-hover: #c7ebff;
+      --log-bg: #1f2937;
+      --log-text: #e2e8f0;
+      --log-border: #1f2937;
+      --tooltip-bg: #0f172a;
+      --tooltip-text: #e2e8f0;
+      --tooltip-border: #1e293b;
+    }
+    :root[data-theme="dark"] {
+      --bg: #0b1220;
+      --bg-grad: radial-gradient(circle at 20% 20%, #111827 0%, #0b1220 50%, #0b1220 100%);
+      --card: #111827;
+      --card-border: #1f2937;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --pill-bg: #1f2937;
+      --pill-text: #e0f2fe;
+      --input-border: #334155;
+      --secondary-bg: #1e293b;
+      --secondary-text: #e2e8f0;
+      --secondary-border: #334155;
+      --secondary-hover: #273449;
+      --log-bg: #1f2937;
+      --log-text: #e2e8f0;
+      --log-border: #1f2937;
+      --tooltip-bg: #f1f5f9;
+      --tooltip-text: #0f172a;
+      --tooltip-border: #cbd5e1;
+    }
+    body {
+      margin: 0;
+      padding: 24px;
+      color: var(--text);
+      background: var(--bg-grad);
+      overflow-x: hidden;
+    }
+    h1, h2 {
+      margin: 0 0 12px 0;
+    }
+    .subtitle {
+      margin: -6px 0 18px 4px;
+      color: var(--muted);
+      font-size: 13px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    h3 {
+      margin: 0 0 10px 0;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+    .page-title {
+      display: inline-block;
+    }
+    .settings-group > div {
+      margin-bottom: 14px;
+    }
+    .settings-group > div:last-child {
+      margin-bottom: 0;
+    }
+    section {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+      max-width: 100%;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
+    }
+    button {
+      cursor: pointer;
+      border-radius: 8px;
+      border: 1px solid var(--text);
+      background: var(--accent);
+      color: #fff;
+      padding: 8px 12px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      transition: transform 120ms ease, box-shadow 120ms ease, opacity 120ms ease;
+    }
+    button.secondary {
+      background: var(--secondary-bg);
+      color: var(--secondary-text);
+      border-color: var(--secondary-border);
+    }
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    button:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(14, 165, 233, 0.25);
+    }
+    button.secondary:hover:not(:disabled) {
+      background: var(--secondary-hover);
+      box-shadow: 0 6px 18px rgba(14, 165, 233, 0.15);
+    }
+    .grid {
+      display: grid;
+      gap: 12px;
+      max-width: 100%;
+    }
+    .grid-2 {
+      grid-template-columns: repeat(2, minmax(260px, 1fr));
+    }
+    @media (max-width: 860px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+    label {
+      display: block;
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+    input[type="text"], input[type="number"] {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--input-border);
+      font-size: 15px;
+      box-sizing: border-box;
+      background: var(--card);
+      color: var(--text);
+    }
+    select {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--input-border);
+      font-size: 15px;
+      box-sizing: border-box;
+      background: var(--card);
+      color: var(--text);
+    }
+    .input-narrow {
+      max-width: 360px;
+    }
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      max-width: 100%;
+    }
+    .row > * {
+      min-width: 0;
+    }
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .slider-row input[type="range"] {
+      flex: 1;
+      max-width: 320px;
+      min-width: 0;
+      width: 100%;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: var(--pill-bg);
+      color: var(--pill-text);
+      font-weight: 600;
+      border: 1px solid var(--card-border);
+    }
+    .pill.invert {
+      background: var(--text);
+      color: var(--card);
+      border-color: transparent;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-size: 12px;
+      padding: 4px 8px;
+    }
+    .muted {
+      color: var(--muted);
+      font-size: 14px;
+    }
+    pre {
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 10px;
+      border-radius: 10px;
+      overflow: auto;
+      max-height: 200px;
+      font-size: 13px;
+    }
+    .log {
+      background: var(--log-bg);
+      color: var(--log-text);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      padding: 10px;
+      border-radius: 10px;
+      height: 120px;
+      overflow: auto;
+      font-size: 13px;
+      border: 1px solid var(--log-border);
+      max-width: 100%;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+      white-space: pre-wrap;
+    }
+    .connect-btn.disconnected {
+      background: #f97316;
+      border-color: #f97316;
+      color: #fff;
+      box-shadow: 0 10px 22px rgba(249, 115, 22, 0.25);
+    }
+    .connect-btn.connected {
+      background: #0f766e;
+      border-color: #0f766e;
+      color: #fff;
+      box-shadow: 0 10px 22px rgba(15, 118, 110, 0.25);
+    }
+    :root[data-theme="dark"] .connect-btn.disconnected {
+      background: #ea580c;
+      border-color: #ea580c;
+      box-shadow: 0 10px 22px rgba(234, 88, 12, 0.3);
+    }
+    :root[data-theme="dark"] .connect-btn.connected {
+      background: #14b8a6;
+      border-color: #14b8a6;
+      box-shadow: 0 10px 22px rgba(20, 184, 166, 0.3);
+    }
+    .card-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      max-width: 100%;
+    }
+    .card-title > * {
+      min-width: 0;
+    }
+    .toolbar-label {
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .test-log {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      background: var(--log-bg);
+      color: var(--log-text);
+      padding: 10px;
+      border-radius: 10px;
+      height: 120px;
+      overflow: auto;
+      font-size: 13px;
+      border: 1px solid var(--log-border);
+      max-width: 100%;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+      white-space: pre-wrap;
+    }
+    .mode-warning {
+      margin: 8px 0 10px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid #f59e0b;
+      background: #fffbeb;
+      color: #92400e;
+      font-size: 13px;
+    }
+    :root[data-theme="dark"] .mode-warning {
+      border-color: #f59e0b;
+      background: #3b2a07;
+      color: #fcd34d;
+    }
+    .hidden {
+      display: none;
+    }
+    .key-input {
+      max-width: 140px;
+    }
+    .key-field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 140px;
+      max-width: 100%;
+    }
+    .hint {
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .key-input.invalid {
+      background: #fee2e2;
+      border-color: #ef4444;
+    }
+    .key-input.capturing {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.25);
+    }
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 52px;
+      height: 28px;
+    }
+    .switch input {
+      display: none;
+    }
+    .switch .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #cbd5e1;
+      transition: 0.2s;
+      border-radius: 28px;
+      border: 1px solid #94a3b8;
+    }
+    .switch .slider:before {
+      position: absolute;
+      content: "";
+      height: 22px;
+      width: 22px;
+      left: 3px;
+      bottom: 2px;
+      background-color: white;
+      transition: 0.2s;
+      border-radius: 50%;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    }
+    .switch input:checked + .slider {
+      background-color: var(--accent);
+      border-color: var(--accent);
+    }
+    .switch input:checked + .slider:before {
+      transform: translateX(22px);
+    }
+    @media (max-width: 640px) {
+      .key-field {
+        min-width: 0;
+      }
+      .key-input {
+        max-width: 100%;
+      }
+    }
+    .tooltip {
+      position: relative;
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      text-align: center;
+      line-height: 20px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-left: 6px;
+      font-size: 12px;
+    }
+    .tooltip .tooltiptext {
+      display: none;
+      visibility: hidden;
+      width: 260px;
+      background-color: var(--tooltip-bg);
+      color: var(--tooltip-text);
+      text-align: left;
+      border-radius: 8px;
+      padding: 10px;
+      position: absolute;
+      z-index: 1;
+      bottom: 130%;
+      left: 0;
+      right: auto;
+      transform: none;
+      max-width: min(260px, calc(100vw - 32px));
+      white-space: normal;
+      opacity: 0;
+      transition: opacity 0.2s;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.2);
+      border: 1px solid var(--tooltip-border);
+    }
+    .tooltip .tooltiptext::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 14px;
+      border-width: 6px;
+      border-style: solid;
+      border-color: var(--tooltip-bg) transparent transparent transparent;
+    }
+    .tooltip:hover .tooltiptext {
+      display: block;
+      visibility: visible;
+      opacity: 1;
+    }
+    .fw-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: rgba(15, 23, 42, 0.55);
+      backdrop-filter: blur(2px);
+    }
+    .fw-overlay.active {
+      display: flex;
+    }
+    .fw-card {
+      width: min(900px, 100%);
+      max-height: 90vh;
+      overflow: auto;
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 20px 60px rgba(15, 23, 42, 0.25);
+    }
+    .fw-steps {
+      margin: 12px 0 16px 20px;
+      padding: 0;
+      color: var(--text);
+    }
+    .fw-steps li {
+      margin-bottom: 8px;
+    }
+    .fw-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .fw-actions .secondary {
+      min-width: 140px;
+    }
+    .fw-note {
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .fw-list {
+      margin: 12px 0 0;
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .fw-list table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      table-layout: auto;
+    }
+    .fw-list th,
+    .fw-list td {
+      padding: 8px 10px;
+      text-align: left;
+      border-bottom: 1px solid var(--card-border);
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+    .fw-list tr:last-child td {
+      border-bottom: 0;
+    }
+    .fw-list th {
+      font-size: 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      background: color-mix(in srgb, var(--card) 88%, var(--accent) 12%);
+    }
+    .fw-chip {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--card-border);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    .fw-chip.beta {
+      border-color: #f59e0b;
+      color: #92400e;
+      background: #fffbeb;
+    }
+    :root[data-theme="dark"] .fw-chip.beta {
+      border-color: #f59e0b;
+      color: #fcd34d;
+      background: #3b2a07;
+    }
+    @media (max-width: 640px) {
+      .fw-card {
+        padding: 16px;
+      }
+      .fw-steps {
+        margin-left: 18px;
+      }
+      .fw-list {
+        overflow-x: auto;
+      }
+      .fw-list table {
+        min-width: 540px;
+      }
+    }
+    .theme-toggle {
+      position: absolute;
+      right: 24px;
+      top: 24px;
+    }
+  </style>
+</head>
+<body>
+  <div class="theme-toggle">
+    <button id="themeBtn" class="secondary">Dark</button>
+  </div>
+  <div class="page-title">
+    <h1>CW USB Adapter</h1>
+    <div class="subtitle">by LB2KK</div>
+  </div>
+
+  <section>
+    <div class="card-title">
+      <h2>Connection</h2>
+      <div class="row" style="gap: 8px;">
+        <button id="connectBtn" class="connect-btn disconnected">Connect</button>
+      </div>
+    </div>
+    <div id="connectHint" class="muted" style="margin-top: 8px;">
+      Connect first to enable settings, diagnostics, and firmware update actions.
+    </div>
+    <div class="row" style="flex-direction: column; align-items: flex-start; gap: 4px; margin-top: 6px;">
+      <span id="fwVersionText" class="muted">Firmware: unknown</span>
+      <span id="serialText" class="muted">Serial: unknown</span>
+      <div class="row" style="gap:8px; align-items:center;">
+        <button id="fwUpdateBtn" class="secondary" disabled>Firmware update...</button>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="card-title">
+      <h2>Settings</h2>
+      <div class="row">
+        <button id="refreshBtn" class="secondary" disabled>Refresh</button>
+        <button id="factoryBtn" class="secondary" disabled>Factory Reset</button>
+      </div>
+    </div>
+    <div class="grid grid-2">
+      <div class="settings-group">
+        <h3>Hardware</h3>
+        <div class="row" style="align-items:center; gap:8px;">
+          <label for="ledToggle">LED
+            <span class="tooltip">?
+              <span class="tooltiptext">Enable or disable blinking LED.</span>
+            </span>
+          </label>
+          <label class="switch">
+            <input id="ledToggle" type="checkbox" disabled />
+            <span class="slider"></span>
+          </label>
+          <button id="identifyBtn" class="secondary" title="Blink device LED" disabled>Identify</button>
+        </div>
+        <div>
+          <label for="brightnessSlider">LED brightness (1–255)
+            <span class="tooltip">?
+              <span class="tooltiptext">Controls RGB LED brightness on Pico Zero (ignored on mono LED).</span>
+            </span>
+          </label>
+          <div class="slider-row">
+            <input id="brightnessSlider" type="range" min="1" max="255" step="1" disabled />
+            <span id="brightnessValue" class="pill">32</span>
+          </div>
+        </div>
+        <div>
+          <label for="colorInput">LED color
+            <span class="tooltip">?
+              <span class="tooltiptext">Pick RGB color for the Pico Zero LED (ignored on mono LED).</span>
+            </span>
+          </label>
+          <div class="row" style="align-items:center;">
+            <input id="colorInput" type="color" value="#ff0000" disabled />
+            <span id="colorValue" class="pill">#ff0000</span>
+          </div>
+        </div>
+      </div>
+      <div class="settings-group">
+        <h3>Input</h3>
+        <div>
+          <label>Key mapping (dit / dah)
+            <span class="tooltip">?
+              <span class="tooltiptext">Single ASCII (A-Z, 0-9, space, punctuation) or hex HID usage like 0x2f.</span>
+            </span>
+          </label>
+          <div class="hint">Click a field, then press a key to capture. Or enter a hex usage like 0xE0.</div>
+          <div class="row">
+            <div class="key-field">
+              <input id="ditInput" class="key-input" type="text" maxlength="6" placeholder="A or 0x2f"
+                     pattern="([A-Za-z0-9 \\[\\]\\-=;\\'\\,\\.\\/])|(0x[0-9a-fA-F]{1,3})|([0-9a-fA-F]{1,3})"
+                     title="Single ASCII (A-Z, 0-9, space, [, ], -, =, ;, ', ,, ., /) or hex like 0x2f" />
+              <span id="ditLabel" class="hint">Dit: -</span>
+            </div>
+            <div class="key-field">
+              <input id="dahInput" class="key-input" type="text" maxlength="6" placeholder="S or 0x30"
+                     pattern="([A-Za-z0-9 \\[\\]\\-=;\\'\\,\\.\\/])|(0x[0-9a-fA-F]{1,3})|([0-9a-fA-F]{1,3})"
+                     title="Single ASCII (A-Z, 0-9, space, [, ], -, =, ;, ', ,, ., /) or hex like 0x2f" />
+              <span id="dahLabel" class="hint">Dah: -</span>
+            </div>
+          </div>
+          <div class="row" style="margin-top:8px;">
+            <button id="swapKeysBtn" class="secondary" disabled>Swap keys</button>
+            <button id="defaultKeysBtn" class="secondary" disabled>Reset keys</button>
+          </div>
+        </div>
+        <div>
+          <label for="usbModeSelect">USB mode
+            <span class="tooltip">?
+              <span class="tooltiptext">HID (keyboard), MIDI (WebMIDI-friendly), or AUTO (start as MIDI, fall back to HID if needed).</span>
+            </span>
+          </label>
+          <div class="row" style="align-items:center;">
+            <select id="usbModeSelect" disabled>
+              <option value="hid">HID (keyboard)</option>
+              <option value="midi">MIDI</option>
+              <option value="auto">Auto (HID→MIDI on traffic)</option>
+            </select>
+          </div>
+          <div class="row" style="margin-top:6px;">
+            <span id="activeModePill" class="pill invert">HID</span>
+          </div>
+        </div>
+        <div>
+          <label for="profileSelect">MIDI profile
+            <span class="tooltip">?
+              <span class="tooltiptext">Vail profile uses notes 1/2. SmartSDR profile defaults to notes 20/21 for CW Dit/CW Dah mapping.</span>
+            </span>
+          </label>
+          <div class="row" style="align-items:center;">
+            <select id="profileSelect" disabled>
+              <option value="vail">Vail-compatible</option>
+              <option value="smartsdr">SmartSDR</option>
+            </select>
+            <span id="profilePill" class="pill">VAIL</span>
+          </div>
+        </div>
+        <div>
+          <label>MIDI notes (dit / dah)
+            <span class="tooltip">?
+              <span class="tooltiptext">Used in MIDI mode. SmartSDR learns these as CW Dit/CW Dah.</span>
+            </span>
+          </label>
+          <div class="row">
+            <div class="key-field">
+              <input id="midiDitNoteInput" class="key-input" type="number" min="0" max="127" step="1" placeholder="20" disabled />
+              <span id="midiDitNoteLabel" class="hint">Dit note: -</span>
+            </div>
+            <div class="key-field">
+              <input id="midiDahNoteInput" class="key-input" type="number" min="0" max="127" step="1" placeholder="21" disabled />
+              <span id="midiDahNoteLabel" class="hint">Dah note: -</span>
+            </div>
+          </div>
+        </div>
+        <div>
+          <label for="debounceSlider">Debounce time (µs, 1000–6000)
+            <span class="tooltip">?
+              <span class="tooltiptext">The time in microseconds to filter multiple inputs from a single press on the key.</span>
+            </span>
+          </label>
+          <div class="slider-row">
+            <input id="debounceSlider" type="range" min="1000" max="6000" step="100" disabled />
+            <span id="debounceValue" class="pill">3000 µs</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="card-title">
+      <h2>Test panel</h2>
+      <button id="clearTestBtn" class="secondary" disabled>Clear</button>
+    </div>
+    <p class="muted">With the page focused, press the paddle/straight key. As a USB keyboard it will deliver normal key events; they appear below (along with other keyboard input).</p>
+    <div id="hidModeWarning" class="mode-warning hidden">
+      Device is currently in MIDI mode. HID key events will not appear here until the adapter returns to HID mode.
+    </div>
+    <div id="testLog" class="test-log"></div>
+  </section>
+
+  <section class="log-section">
+    <div class="card-title">
+      <h2>Log</h2>
+      <div class="row" style="gap:8px;">
+        <button id="midiDebugBtn" class="secondary">Start MIDI debug</button>
+        <button id="clearLogBtn" class="secondary" disabled>Clear</button>
+      </div>
+    </div>
+    <div id="log" class="log"></div>
+  </section>
+
+  <div id="fwOverlay" class="fw-overlay" aria-hidden="true">
+    <div class="fw-card">
+      <div class="card-title">
+        <h2>Firmware Update</h2>
+        <button id="fwCloseBtn" class="secondary">Close</button>
+      </div>
+      <div class="fw-note">Follow these steps to update your adapter firmware. Read all the steps.</div>
+      <ol class="fw-steps">
+        <li>Download the new firmware file from the list below.</li>
+        <li>Click the "Reboot to Update Mode" button below.</li>
+        <li>Use the file explorer in your OS and open the <strong>RPI-RP2</strong> drive.</li>
+        <li>Copy the downloaded <strong>.uf2</strong> file into the drive.</li>
+        <li>Unplug and re‑plug the CW USB adapter.</li>
+      </ol>
+      <div id="fwList" class="fw-list"></div>
+      <div class="fw-actions">
+        <button id="fwRebootBtn">Reboot to Update Mode</button>
+      </div>
+      <div id="fwOverlayStatus" class="fw-note" style="margin-top:10px;"></div>
+    </div>
+  </div>
+
+  <script>
+    let port, reader, writer;
+    let readLoopAbort;
+    let readLoopPromise = null;
+    let textDecoder = null;
+    let readableStreamClosed = null;
+    const pending = [];
+    let latestStatus = {};
+    const DEVICE_FILTERS = [{ usbVendorId: 0x2e8a, usbProductId: 0x000a }];
+
+    const $ = (id) => document.getElementById(id);
+    const logEl = $("log");
+    const testLog = $("testLog");
+
+    const buttons = {
+      connect: $("connectBtn"),
+      identify: $("identifyBtn"),
+      theme: $("themeBtn"),
+      refresh: $("refreshBtn"),
+      factory: $("factoryBtn"),
+      ledToggle: $("ledToggle"),
+      brightnessSlider: $("brightnessSlider"),
+      colorInput: $("colorInput"),
+      defaultKeys: $("defaultKeysBtn"),
+      swapKeys: $("swapKeysBtn"),
+      debounceSlider: $("debounceSlider"),
+      clearLog: $("clearLogBtn"),
+      clearTest: $("clearTestBtn"),
+      usbModeSelect: $("usbModeSelect"),
+      profileSelect: $("profileSelect"),
+      midiDitNoteInput: $("midiDitNoteInput"),
+      midiDahNoteInput: $("midiDahNoteInput"),
+      midiDebug: $("midiDebugBtn"),
+      fwUpdate: $("fwUpdateBtn"),
+      fwOverlay: $("fwOverlay"),
+      fwClose: $("fwCloseBtn"),
+      fwOverlayDownload: $("fwOverlayDownload"),
+      fwList: $("fwList"),
+      fwReboot: $("fwRebootBtn"),
+      fwOverlayStatus: $("fwOverlayStatus"),
+    };
+    let captureTarget = null; // which key input is listening for a key press
+    const FW_MANIFEST_URL = "firmware/manifest.json";
+    let manifestEntries = null;
+    let latestFirmware = null;
+    let midiDebugEnabled = false;
+    let isConnected = false;
+
+    function canUseSerial() {
+      if (!("serial" in navigator)) return { ok: false, msg: "Web Serial not supported (use Chrome/Edge 89+)" };
+      const host = location.hostname;
+      const secure = window.isSecureContext || host === "localhost" || host === "127.0.0.1";
+      if (!secure) return { ok: false, msg: "Web Serial requires HTTPS or http://localhost" };
+      return { ok: true };
+    }
+
+    function setConnectedUI(connected, infoText = "") {
+      isConnected = connected;
+      buttons.connect.textContent = connected ? "Disconnect" : "Connect";
+      buttons.connect.classList.toggle("connected", connected);
+      buttons.connect.classList.toggle("disconnected", !connected);
+      buttons.theme.disabled = false;
+      buttons.identify.disabled = !connected;
+      buttons.refresh.disabled = !connected;
+      buttons.factory.disabled = !connected;
+      buttons.ledToggle.disabled = !connected;
+      buttons.brightnessSlider.disabled = !connected;
+      buttons.colorInput.disabled = !connected;
+      buttons.defaultKeys.disabled = !connected;
+      buttons.swapKeys.disabled = !connected;
+      $("ditInput").disabled = !connected;
+      $("dahInput").disabled = !connected;
+      buttons.debounceSlider.disabled = !connected;
+      buttons.usbModeSelect.disabled = !connected;
+      buttons.profileSelect.disabled = !connected;
+      buttons.midiDitNoteInput.disabled = !connected;
+      buttons.midiDahNoteInput.disabled = !connected;
+      buttons.fwUpdate.disabled = !connected;
+      buttons.clearLog.disabled = false;
+      buttons.clearTest.disabled = false;
+      $("connectHint").style.display = connected ? "none" : "block";
+      applyDisabledHints(connected);
+      updateFirmwareStatus(latestStatus?.version);
+      if (!connected) {
+        $("serialText").textContent = "Serial: unknown";
+        updateHidModeWarning(null, null);
+      }
+    }
+
+    function formatTime() {
+      const d = new Date();
+      return d.toLocaleTimeString([], { hour12: false });
+    }
+
+    function appendLog(msg, isError = false) {
+      const time = formatTime();
+      const line = document.createElement("div");
+      line.textContent = `[${time}] ${msg}`;
+      if (isError) line.style.color = "#f87171";
+      logEl.appendChild(line);
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    function appendTest(eventType, key, code) {
+      const time = formatTime();
+      const line = document.createElement("div");
+      line.textContent = `[${time}] ${eventType} key="${key}" code=${code}`;
+      testLog.appendChild(line);
+      testLog.scrollTop = testLog.scrollHeight;
+    }
+
+    async function toggleMidiDebug() {
+      if (!writer) {
+        appendLog("Not connected", true);
+        return;
+      }
+      const next = !midiDebugEnabled;
+      try {
+        await sendCommand(next ? "mididebug on" : "mididebug off");
+        midiDebugEnabled = next;
+        buttons.midiDebug.textContent = midiDebugEnabled ? "Stop MIDI debug" : "Start MIDI debug";
+        appendLog(`MIDI debug ${midiDebugEnabled ? "enabled" : "disabled"}`);
+      } catch (err) {
+        appendLog(`MIDI debug error: ${err.message}`, true);
+      }
+    }
+
+    window.addEventListener("keydown", (e) => appendTest("keydown", e.key, e.code));
+    window.addEventListener("keyup", (e) => appendTest("keyup", e.key, e.code));
+    window.addEventListener("keydown", (e) => {
+      if (!captureTarget) return;
+      if (e.code === "Escape") {
+        captureTarget.classList.remove("capturing");
+        captureTarget = null;
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
+      const usage = codeToUsage(e.code);
+      if (usage === null) {
+        appendLog(`Unsupported key: ${e.code}`, true);
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
+      const tok = usageToToken(usage);
+      captureTarget.value = tok;
+      markInputValidity(captureTarget);
+      captureTarget.classList.remove("capturing");
+      captureTarget = null;
+      e.preventDefault();
+      e.stopPropagation();
+      commitKeysFromInputs();
+    });
+
+    buttons.clearLog.addEventListener("click", () => (logEl.textContent = ""));
+    buttons.clearTest.addEventListener("click", () => (testLog.textContent = ""));
+    buttons.midiDebug.addEventListener("click", toggleMidiDebug);
+
+    async function connect() {
+      try {
+        const ok = canUseSerial();
+        if (!ok.ok) {
+          appendLog(ok.msg, true);
+          return;
+        }
+        // Prefer filtered device picker; fall back to unfiltered if unsupported
+        try {
+          port = await navigator.serial.requestPort({ filters: DEVICE_FILTERS });
+        } catch (e) {
+          appendLog("Filtered picker unavailable, showing all devices", true);
+          port = await navigator.serial.requestPort();
+        }
+        await port.open({ baudRate: 115200 });
+        textDecoder = new TextDecoderStream();
+        readableStreamClosed = port.readable.pipeTo(textDecoder.writable);
+        reader = textDecoder.readable.getReader();
+        writer = port.writable.getWriter();
+        readLoopAbort = new AbortController();
+        readLoopPromise = readLoop(readLoopAbort.signal);
+        setConnectedUI(true);
+        appendLog("Connected");
+        await refreshStatus();
+      } catch (err) {
+        appendLog(`Connect error: ${err.message}`, true);
+      }
+    }
+
+    async function disconnect() {
+      try {
+        if (readLoopAbort) readLoopAbort.abort();
+
+        // Stop reading
+        if (reader) {
+          try { await reader.cancel(); } catch (_) {}
+          try { reader.releaseLock(); } catch (_) {}
+          reader = null;
+        }
+        if (readLoopPromise) {
+          try { await readLoopPromise; } catch (_) {}
+          readLoopPromise = null;
+        }
+        if (readableStreamClosed) {
+          try { await readableStreamClosed; } catch (_) {}
+          readableStreamClosed = null;
+        }
+        textDecoder = null;
+
+        if (writer) {
+          const w = writer;
+          writer = null;
+          try { w.releaseLock(); } catch (_) {}
+        }
+        // Reject any pending command promises
+        while (pending.length) {
+          const p = pending.shift();
+          if (p && p.reject) p.reject(new Error("Disconnected"));
+        }
+        if (port) {
+          const p = port;
+          port = null;
+          try {
+            await p.close();
+          } catch (err) {
+            appendLog(`Port close warning: ${err.message}`, true);
+          }
+        }
+      } catch (err) {
+        appendLog(`Disconnect error: ${err.message}`, true);
+      } finally {
+        reader = null;
+        writer = null;
+        port = null;
+        readLoopAbort = null;
+        readLoopPromise = null;
+        readableStreamClosed = null;
+        textDecoder = null;
+        setConnectedUI(false);
+      }
+    }
+
+    async function readLoop(signal) {
+      let buffer = "";
+      while (!signal.aborted) {
+        try {
+          const { value, done } = await reader.read();
+          if (signal.aborted) break;
+          if (done) break;
+          if (value) {
+            buffer += value;
+            const parts = buffer.split(/\r?\n/);
+            buffer = parts.pop() || "";
+            for (const line of parts) {
+              if (!line.trim()) continue;
+              try {
+                const json = JSON.parse(line);
+                if (pending.length) {
+                  pending.shift().resolve(json);
+                } else if (!updateStatusUIFromResponseIfStatus(json)) {
+                  appendLog(`Recv: ${line}`);
+                }
+              } catch (err) {
+                appendLog(`Non-JSON: ${line}`);
+              }
+            }
+          }
+        } catch (err) {
+          if (!signal.aborted) appendLog(`Read error: ${err.message}`, true);
+          break;
+        }
+      }
+    }
+
+    function sendCommand(cmd) {
+      return new Promise((resolve, reject) => {
+        if (!writer) {
+          reject(new Error("Not connected"));
+          return;
+        }
+        appendLog(`[CDC OUT] ${cmd}`);
+        pending.push({ resolve, reject });
+        writer.write(new TextEncoder().encode(cmd + "\n"));
+        setTimeout(() => {
+          const idx = pending.findIndex((p) => p.resolve === resolve);
+          if (idx !== -1) {
+            pending.splice(idx, 1);
+            reject(new Error("Timeout"));
+          }
+        }, 2000);
+      });
+    }
+
+    function usageLabel(usage) {
+      const map = {
+        0x2f: "[",
+        0x30: "]",
+        0x2c: ",",
+        0x2d: "-",
+        0x2e: ".",
+        0x28: "Enter",
+        0xe0: "Ctrl Left",
+        0xe4: "Ctrl Right",
+      };
+      if (usage >= 0x04 && usage <= 0x1d) return String.fromCharCode("A".charCodeAt(0) + (usage - 0x04));
+      if (usage === 0x27) return "0";
+      if (usage >= 0x1e && usage <= 0x26) return String.fromCharCode("1".charCodeAt(0) + (usage - 0x1e));
+      if (map[usage]) return map[usage];
+      return `0x${usage.toString(16)}`;
+    }
+
+    function usageToToken(usage) {
+      const label = usageLabel(usage);
+      if (label.startsWith("0x")) return label;
+      if (label.length === 1) return label;
+      return `0x${usage.toString(16)}`;
+    }
+
+    function tokenToUsage(tok) {
+      if (!tok) return null;
+      if (tok.length === 1) {
+        const c = tok;
+        if (/[a-zA-Z]/.test(c)) return 0x04 + (c.toUpperCase().charCodeAt(0) - "A".charCodeAt(0));
+        if (/[1-9]/.test(c)) return 0x1E + (c.charCodeAt(0) - "1".charCodeAt(0));
+        if (c === "0") return 0x27;
+        switch (c) {
+          case " ": return 0x2C;
+          case "-": return 0x2D;
+          case "=": return 0x2E;
+          case "[": return 0x2F;
+          case "]": return 0x30;
+          case ";": return 0x33;
+          case "'": return 0x34;
+          case ",": return 0x36;
+          case ".": return 0x37;
+          case "/": return 0x38;
+          default: return null;
+        }
+      }
+      if (/^0x[0-9a-fA-F]+$/.test(tok)) return parseInt(tok, 16);
+      if (/^[0-9a-fA-F]+$/.test(tok) && tok.length <= 3) return parseInt(tok, 16);
+      return null;
+    }
+
+    function isValidKeyToken(tok) {
+      if (!tok || tok.length > 6) return false;
+      if (/^0x[0-9a-fA-F]+$/.test(tok)) return true;
+      if (/^[0-9a-fA-F]+$/.test(tok) && tok.length <= 3) return true;
+      if (tok.length === 1) {
+        const c = tok;
+        if (/[a-zA-Z0-9]/.test(c)) return true;
+        if (/[ \[\]\-=\;\'\,\.\/]/.test(c)) return true;
+      }
+      return false;
+    }
+
+    function codeToUsage(code) {
+      if (!code) return null;
+      if (code.startsWith("Key") && code.length === 4) {
+        const ch = code[3];
+        if (ch >= "A" && ch <= "Z") return 0x04 + (ch.charCodeAt(0) - "A".charCodeAt(0));
+      }
+      if (code.startsWith("Digit") && code.length === 6) {
+        const d = code[5];
+        if (d >= "1" && d <= "9") return 0x1E + (d.charCodeAt(0) - "1".charCodeAt(0));
+        if (d === "0") return 0x27;
+      }
+      switch (code) {
+        case "Space": return 0x2C;
+        case "Minus": return 0x2D;
+        case "Equal": return 0x2E;
+        case "BracketLeft": return 0x2F;
+        case "BracketRight": return 0x30;
+        case "Semicolon": return 0x33;
+        case "Quote": return 0x34;
+        case "Comma": return 0x36;
+        case "Period": return 0x37;
+        case "Slash": return 0x38;
+        case "ControlLeft": return 0xE0;
+        case "ControlRight": return 0xE4;
+        default: return null;
+      }
+    }
+
+    function markInputValidity(el) {
+      const v = el.value.trim();
+      if (v === "" || isValidKeyToken(v)) {
+        el.classList.remove("invalid");
+        el.setCustomValidity("");
+      } else {
+        el.classList.add("invalid");
+        el.setCustomValidity("Invalid key token");
+      }
+    }
+
+    function updateKeyLabels() {
+      const ditTok = $("ditInput").value.trim();
+      const dahTok = $("dahInput").value.trim();
+      const ditUsage = tokenToUsage(ditTok);
+      const dahUsage = tokenToUsage(dahTok);
+      const ditName = ditUsage === null ? "-" : usageLabel(ditUsage);
+      const dahName = dahUsage === null ? "-" : usageLabel(dahUsage);
+      $("ditLabel").textContent = `Dit: ${ditName}${ditTok ? ` (${ditTok})` : ""}`;
+      $("dahLabel").textContent = `Dah: ${dahName}${dahTok ? ` (${dahTok})` : ""}`;
+    }
+
+    function updateMidiNoteLabels() {
+      const ditVal = Number(buttons.midiDitNoteInput.value);
+      const dahVal = Number(buttons.midiDahNoteInput.value);
+      const ditLabel = Number.isFinite(ditVal) ? ditVal : "-";
+      const dahLabel = Number.isFinite(dahVal) ? dahVal : "-";
+      $("midiDitNoteLabel").textContent = `Dit note: ${ditLabel}`;
+      $("midiDahNoteLabel").textContent = `Dah note: ${dahLabel}`;
+    }
+
+    function updateHidModeWarning(activeMode, usbMode) {
+      const warning = $("hidModeWarning");
+      if (!warning) return;
+      if (activeMode === "midi") {
+        let msg = "Device is currently in MIDI mode. HID key events will not appear here until the adapter returns to HID mode.";
+        if (usbMode === "auto") {
+          msg += " In AUTO mode, MIDI can latch after MIDI traffic until reboot/power-cycle or explicit USB mode change.";
+        }
+        warning.textContent = msg;
+        warning.classList.remove("hidden");
+      } else {
+        warning.classList.add("hidden");
+      }
+    }
+
+    function updateFirmwareStatus(deviceVersion) {
+      const updateBtn = buttons.fwUpdate;
+      updateBtn.textContent = "Firmware update...";
+    }
+
+    function applyDisabledHints(connected) {
+      const msg = "Connect first";
+      const controls = [
+        buttons.identify,
+        buttons.refresh,
+        buttons.factory,
+        buttons.ledToggle,
+        buttons.brightnessSlider,
+        buttons.colorInput,
+        buttons.defaultKeys,
+        buttons.swapKeys,
+        $("ditInput"),
+        $("dahInput"),
+        buttons.debounceSlider,
+        buttons.usbModeSelect,
+        buttons.profileSelect,
+        buttons.midiDitNoteInput,
+        buttons.midiDahNoteInput,
+        buttons.fwUpdate,
+      ];
+      controls.forEach((el) => {
+        if (!el) return;
+        if (!connected) {
+          el.title = msg;
+        } else if (el.title === msg) {
+          el.removeAttribute("title");
+        }
+      });
+    }
+
+    function populateFirmwareOverlay() {
+      const overlayLink = buttons.fwOverlayDownload;
+      const status = buttons.fwOverlayStatus;
+      status.textContent = "";
+      if (overlayLink && latestFirmware && latestFirmware.version) {
+        const href = latestFirmware.url || `firmware/${latestFirmware.name || ""}`;
+        overlayLink.href = href;
+        overlayLink.download = latestFirmware.name || "firmware.uf2";
+        overlayLink.style.pointerEvents = "auto";
+        overlayLink.style.opacity = "1";
+      } else if (overlayLink) {
+        overlayLink.removeAttribute("href");
+        overlayLink.removeAttribute("download");
+        overlayLink.style.pointerEvents = "none";
+        overlayLink.style.opacity = "0.6";
+        status.textContent = "Download unavailable. Firmware manifest could not be loaded.";
+      }
+      renderFirmwareList();
+    }
+
+    function normalizeManifestEntries(entries) {
+      if (!Array.isArray(entries)) return [];
+      return entries
+        .filter((e) => e && typeof e === "object")
+        .map((e) => {
+          const name = String(e.name || "").trim();
+          const version = String(e.version || "").trim() || extractVersionFromName(name) || "unknown";
+          const url = String(e.url || (name ? `firmware/${name}` : "")).trim();
+          const channel = String(e.channel || "").trim().toLowerCase() || (name.toLowerCase().includes("beta") ? "beta" : "stable");
+          const board = String(e.board || "").trim() || (name.toLowerCase().includes("picozero") ? "picozero" : "pico");
+          const date = String(e.date || "").trim() || "n/a";
+          return { ...e, name, version, url, channel, board, date };
+        })
+        .filter((e) => e.name || e.url);
+    }
+
+    function resolveLatestFirmware(entries, latestRef) {
+      if (!entries || !entries.length) return null;
+      if (!latestRef) return pickLatest(entries);
+      if (typeof latestRef === "object") return latestRef;
+      const key = String(latestRef).trim();
+      if (!key) return pickLatest(entries);
+      const found = entries.find((e) =>
+        String(e.version || "") === key ||
+        String(e.name || "") === key ||
+        String(e.url || "") === key
+      );
+      return found || pickLatest(entries);
+    }
+
+    function renderFirmwareList() {
+      const wrap = buttons.fwList;
+      if (!wrap) return;
+      const entries = normalizeManifestEntries(manifestEntries || []);
+      if (!entries.length) {
+        wrap.innerHTML = '<div class="fw-note" style="padding:10px;">No firmware files listed in manifest.</div>';
+        return;
+      }
+      const latestKey = latestFirmware ? (latestFirmware.version || latestFirmware.name || latestFirmware.url) : "";
+      const rows = entries
+        .map((f) => {
+          const key = f.version || f.name || f.url;
+          const isLatest = latestKey && key === latestKey;
+          const channelClass = f.channel === "beta" ? "fw-chip beta" : "fw-chip";
+          const label = f.channel || "stable";
+          const downloadHref = f.url || "#";
+          const downloadName = f.name || "firmware.uf2";
+          const displayName = f.name || f.version || "unnamed";
+          return `
+            <tr>
+              <td>${displayName}${isLatest ? ' <span class="fw-chip">latest</span>' : ""}</td>
+              <td><span class="${channelClass}">${label}</span></td>
+              <td>${f.board || "n/a"}</td>
+              <td>${f.date || "n/a"}</td>
+              <td><a class="secondary" href="${downloadHref}" download="${downloadName}">Download</a></td>
+            </tr>
+          `;
+        })
+        .join("");
+      wrap.innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Channel</th>
+              <th>Board</th>
+              <th>Date</th>
+              <th>File</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      `;
+    }
+
+    function openFirmwareOverlay() {
+      populateFirmwareOverlay();
+      buttons.fwOverlay.classList.add("active");
+      buttons.fwOverlay.setAttribute("aria-hidden", "false");
+    }
+
+    function closeFirmwareOverlay() {
+      buttons.fwOverlay.classList.remove("active");
+      buttons.fwOverlay.setAttribute("aria-hidden", "true");
+      buttons.fwOverlayStatus.textContent = "";
+    }
+
+    function updateStatusUI(data) {
+      latestStatus = data;
+      console.log("STATUS", data);
+      buttons.ledToggle.checked = !!data.led;
+      $("ditInput").value = usageToToken(data.ditUsage);
+      $("dahInput").value = usageToToken(data.dahUsage);
+      markInputValidity($("ditInput"));
+      markInputValidity($("dahInput"));
+      updateKeyLabels();
+      buttons.debounceSlider.value = data.debounceUs;
+      $("debounceValue").textContent = `${data.debounceUs} µs`;
+      if (typeof data.brightness !== "undefined") {
+        buttons.brightnessSlider.value = data.brightness;
+        $("brightnessValue").textContent = `${data.brightness}`;
+      }
+      if (typeof data.usbMode === "string") {
+        buttons.usbModeSelect.value = data.usbMode;
+      }
+      if (typeof data.activeMode === "string") {
+        $("activeModePill").textContent = data.activeMode.toUpperCase();
+      }
+      updateHidModeWarning(
+        typeof data.activeMode === "string" ? data.activeMode.toLowerCase() : null,
+        typeof data.usbMode === "string" ? data.usbMode.toLowerCase() : null
+      );
+      if (typeof data.midiProfile === "string") {
+        buttons.profileSelect.value = data.midiProfile;
+        $("profilePill").textContent = data.midiProfile.toUpperCase();
+      }
+      if (typeof data.midiDitNote !== "undefined") {
+        buttons.midiDitNoteInput.value = data.midiDitNote;
+      }
+      if (typeof data.midiDahNote !== "undefined") {
+        buttons.midiDahNoteInput.value = data.midiDahNote;
+      }
+      updateMidiNoteLabels();
+      if (typeof data.color !== "undefined") {
+        const hex = `#${data.color.toString(16).padStart(6, "0")}`;
+        buttons.colorInput.value = hex;
+        $("colorValue").textContent = hex;
+      }
+      $("fwVersionText").textContent = data.version ? `Firmware: ${data.version}` : "Firmware: (unknown)";
+      $("serialText").textContent = data.serial ? `Serial: ${data.serial}` : "Serial: (unknown)";
+      updateFirmwareStatus(data.version);
+    }
+
+    async function refreshStatus() {
+      try {
+        const resp = await sendCommand("status");
+        updateStatusUI(resp);
+      } catch (err) {
+        appendLog(`Status error: ${err.message}`, true);
+      }
+    }
+
+    // Handlers
+    buttons.connect.addEventListener("click", async () => {
+      if (port) {
+        await disconnect();
+      } else {
+        await connect();
+      }
+    });
+    buttons.refresh.addEventListener("click", refreshStatus);
+    buttons.factory.addEventListener("click", async () => {
+      try {
+        await sendCommand("factory reset");
+        await refreshStatus();
+        appendLog("Factory reset done");
+      } catch (err) {
+        appendLog(`Factory error: ${err.message}`, true);
+      }
+    });
+    buttons.fwUpdate.addEventListener("click", () => {
+      openFirmwareOverlay();
+    });
+    buttons.fwClose.addEventListener("click", () => {
+      closeFirmwareOverlay();
+    });
+    buttons.fwOverlay.addEventListener("click", (e) => {
+      if (e.target === buttons.fwOverlay) closeFirmwareOverlay();
+    });
+    buttons.fwReboot.addEventListener("click", async () => {
+      try {
+        await sendCommand("dfu");
+        buttons.fwOverlayStatus.textContent = "Device rebooting to update mode. If it disconnects, this is expected.";
+        await disconnect();
+      } catch (err) {
+        buttons.fwOverlayStatus.textContent = `Reboot failed: ${err.message}`;
+      }
+    });
+    buttons.ledToggle.addEventListener("change", async (e) => {
+      if (!writer) return;
+      try {
+        await sendCommand(e.target.checked ? "led on" : "led off");
+        await refreshStatus();
+      } catch (err) {
+        appendLog(`LED error: ${err.message}`, true);
+      }
+    });
+    buttons.defaultKeys.addEventListener("click", async () => { await sendCommand("key default"); await refreshStatus(); });
+    async function commitKeysFromInputs() {
+      const dit = $("ditInput").value.trim();
+      const dah = $("dahInput").value.trim();
+      if (!dit || !dah) {
+        appendLog("Enter both dit and dah values", true);
+        return;
+      }
+      if (!isValidKeyToken(dit) || !isValidKeyToken(dah)) {
+        appendLog("Keys must be a single allowed character or hex like 0x2f", true);
+        return;
+      }
+      try {
+        const resp = await sendCommand(`key ${dit} ${dah}`);
+        if (resp.error) {
+          appendLog(`Key error: ${resp.error}`, true);
+        }
+        await refreshStatus();
+      } catch (err) {
+        appendLog(`Key set error: ${err.message}`, true);
+      }
+    }
+    const ditInput = $("ditInput");
+    const dahInput = $("dahInput");
+    [ditInput, dahInput].forEach((el) => {
+      el.addEventListener("input", () => {
+        markInputValidity(el);
+        updateKeyLabels();
+      });
+      el.addEventListener("change", commitKeysFromInputs);
+      el.addEventListener("focus", () => {
+        captureTarget = el;
+        el.classList.add("capturing");
+      });
+      el.addEventListener("blur", () => {
+        if (captureTarget === el) captureTarget = null;
+        el.classList.remove("capturing");
+      });
+      el.addEventListener("click", () => {
+        captureTarget = el;
+        el.classList.add("capturing");
+        el.focus();
+      });
+    });
+    buttons.swapKeys.addEventListener("click", () => {
+      const dit = $("ditInput").value;
+      const dah = $("dahInput").value;
+      $("ditInput").value = dah;
+      $("dahInput").value = dit;
+      updateKeyLabels();
+      commitKeysFromInputs();
+    });
+    buttons.debounceSlider.addEventListener("input", (e) => {
+      $("debounceValue").textContent = `${e.target.value} µs`;
+    });
+    buttons.debounceSlider.addEventListener("change", async (e) => {
+      const v = Number(e.target.value);
+      if (Number.isNaN(v) || v < 1000 || v > 6000) {
+        appendLog("Debounce must be 1000-6000 µs", true);
+        return;
+      }
+      try {
+        await sendCommand(`debounce ${v}`);
+        await refreshStatus();
+      } catch (err) {
+        appendLog(`Debounce error: ${err.message}`, true);
+      }
+    });
+    buttons.brightnessSlider.addEventListener("input", (e) => {
+      $("brightnessValue").textContent = `${e.target.value}`;
+    });
+    buttons.brightnessSlider.addEventListener("change", async (e) => {
+      const v = Number(e.target.value);
+      if (Number.isNaN(v) || v < 1 || v > 255) {
+        appendLog("Brightness must be 1-255", true);
+        return;
+      }
+      try {
+        await sendCommand(`brightness ${v}`);
+        await refreshStatus();
+      } catch (err) {
+        appendLog(`Brightness error: ${err.message}`, true);
+      }
+    });
+    // Live preview for brightness
+    let brightnessPending = null;
+    let brightnessTimer = null;
+    function flushBrightness() {
+      if (brightnessPending === null) return;
+      const v = brightnessPending;
+      brightnessPending = null;
+      brightnessTimer = null;
+      (async () => {
+        try { await sendCommand(`brightness ${v}`); } catch (err) { appendLog(`Brightness error: ${err.message}`, true); }
+      })();
+    }
+    buttons.brightnessSlider.addEventListener("input", (e) => {
+      $("brightnessValue").textContent = `${e.target.value}`;
+      brightnessPending = Number(e.target.value);
+      if (!brightnessTimer) brightnessTimer = setTimeout(flushBrightness, 80);
+    });
+    buttons.brightnessSlider.addEventListener("change", (e) => {
+      brightnessPending = Number(e.target.value);
+      flushBrightness();
+      refreshStatus();
+    });
+    // Live preview for color
+    let colorPending = null;
+    let colorTimer = null;
+    function flushColor() {
+      if (!colorPending) return;
+      const hex = colorPending;
+      colorPending = null;
+      colorTimer = null;
+      (async () => {
+        try { await sendCommand(`color ${hex}`); } catch (err) { appendLog(`Color error: ${err.message}`, true); }
+      })();
+    }
+    buttons.colorInput.addEventListener("input", (e) => {
+      const hex = e.target.value || "#ff0000";
+      const clean = hex.startsWith("#") ? hex : `#${hex}`;
+      $("colorValue").textContent = clean;
+      colorPending = clean;
+      if (!colorTimer) colorTimer = setTimeout(flushColor, 80);
+    });
+    buttons.colorInput.addEventListener("change", (e) => {
+      const hex = e.target.value || "#ff0000";
+      const clean = hex.startsWith("#") ? hex : `#${hex}`;
+      colorPending = clean;
+      flushColor();
+      refreshStatus();
+    });
+    buttons.usbModeSelect.addEventListener("change", async (e) => {
+      const mode = e.target.value;
+      if (!["hid", "midi", "auto"].includes(mode)) return;
+      try {
+        await sendCommand(`usbmode ${mode}`);
+        await refreshStatus();
+      } catch (err) {
+        appendLog(`USB mode error: ${err.message}`, true);
+      }
+    });
+    buttons.profileSelect.addEventListener("change", async (e) => {
+      const profile = e.target.value;
+      if (!["vail", "smartsdr"].includes(profile)) return;
+      try {
+        await sendCommand(`profile ${profile}`);
+        await refreshStatus();
+      } catch (err) {
+        appendLog(`Profile error: ${err.message}`, true);
+      }
+    });
+
+    async function commitMidiNote(side) {
+      const input = side === "dit" ? buttons.midiDitNoteInput : buttons.midiDahNoteInput;
+      const val = Number(input.value);
+      if (!Number.isInteger(val) || val < 0 || val > 127) {
+        appendLog("MIDI note must be 0-127", true);
+        return;
+      }
+      try {
+        await sendCommand(`midinote ${side} ${val}`);
+        await refreshStatus();
+      } catch (err) {
+        appendLog(`MIDINOTE error: ${err.message}`, true);
+      }
+    }
+
+    buttons.midiDitNoteInput.addEventListener("input", updateMidiNoteLabels);
+    buttons.midiDahNoteInput.addEventListener("input", updateMidiNoteLabels);
+    buttons.midiDitNoteInput.addEventListener("change", async () => { await commitMidiNote("dit"); });
+    buttons.midiDahNoteInput.addEventListener("change", async () => { await commitMidiNote("dah"); });
+
+    // helper to keep compatibility if a command returns status-like JSON
+    function updateStatusUIFromResponseIfStatus(resp) {
+      if (resp && typeof resp === "object" && "led" in resp && "ditUsage" in resp) {
+        updateStatusUI(resp);
+        return true;
+      }
+      return false;
+    }
+
+    // Firmware checker utilities
+    const versionRegex = /cw_usb_v1_[0-9]{8}T[0-9]{6}Z/;
+    function extractVersionFromName(name) {
+      const m = name.match(versionRegex);
+      return m ? m[0] : null;
+    }
+    async function extractVersionFromFile(file) {
+      const nameVer = extractVersionFromName(file.name);
+      if (nameVer) return nameVer;
+      const buf = await file.arrayBuffer();
+      const text = new TextDecoder().decode(buf);
+      const m = text.match(versionRegex);
+      return m ? m[0] : "unknown";
+    }
+    function pickLatest(entries) {
+      if (!entries || !entries.length) return null;
+      return [...entries].sort((a, b) => {
+        const va = a.version || "";
+        const vb = b.version || "";
+        return vb.localeCompare(va);
+      })[0];
+    }
+
+    async function handleFirmwareManifest() {
+      try {
+        const resp = await fetch(FW_MANIFEST_URL, { cache: "no-store" });
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const data = await resp.json();
+        if (Array.isArray(data)) {
+          manifestEntries = normalizeManifestEntries(data);
+          latestFirmware = pickLatest(manifestEntries);
+        } else if (data && typeof data === "object" && Array.isArray(data.firmwares)) {
+          manifestEntries = normalizeManifestEntries(data.firmwares);
+          latestFirmware = resolveLatestFirmware(manifestEntries, data.latest);
+        } else if (data && typeof data === "object" && data.version) {
+          manifestEntries = normalizeManifestEntries([data]);
+          latestFirmware = manifestEntries[0] || data;
+        } else {
+          manifestEntries = null;
+          latestFirmware = null;
+        }
+        updateFirmwareStatus(latestStatus?.version);
+      } catch (err) {
+        latestFirmware = null;
+        manifestEntries = null;
+        console.error("Manifest fetch failed", err);
+      }
+    }
+
+    function applyTheme(theme) {
+      const t = theme === "dark" ? "dark" : "light";
+      document.documentElement.setAttribute("data-theme", t);
+      buttons.theme.textContent = t === "dark" ? "Light" : "Dark";
+      try { localStorage.setItem("cw_theme", t); } catch (_) {}
+    }
+
+
+    // Initial UI
+    buttons.profileSelect.value = "vail";
+    buttons.midiDitNoteInput.value = "1";
+    buttons.midiDahNoteInput.value = "2";
+    $("profilePill").textContent = "VAIL";
+    updateMidiNoteLabels();
+    setConnectedUI(false);
+    const ok = canUseSerial();
+    if (!ok.ok) {
+      appendLog(ok.msg, true);
+      buttons.connect.disabled = true;
+    }
+    handleFirmwareManifest();
+    buttons.identify.addEventListener("click", async () => {
+      try {
+        await sendCommand("identify");
+        appendLog("Identify triggered");
+      } catch (err) {
+        appendLog(`Identify error: ${err.message}`, true);
+      }
+    });
+    // Load persisted theme
+    try {
+      const stored = localStorage.getItem("cw_theme");
+      if (stored) applyTheme(stored);
+    } catch (_) {}
+    // Theme toggle
+    buttons.theme.addEventListener("click", () => {
+      const current = document.documentElement.getAttribute("data-theme");
+      const next = current === "dark" ? "light" : "dark";
+      applyTheme(next);
+    });
+
+    // Firmware picker (optional manual check)
+    const fwPicker = document.createElement("input");
+    fwPicker.type = "file";
+    fwPicker.webkitdirectory = true;
+    fwPicker.multiple = true;
+    fwPicker.hidden = true;
+    document.body.appendChild(fwPicker);
+    // (picker not surfaced in UI; manifest fetch is the primary path)
+  </script>
+</body>
+</html>

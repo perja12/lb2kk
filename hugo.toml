@@ -26,6 +26,11 @@ avatar = "logo.webp"
     name = "Tags"
     url = "/tags/"
     weight = 2
+  [[menu.main]]
+    identifier = "cwusb"
+    name = "CW USB adapter"
+    url = "/cwusb/"
+    weight = 3
 
 
 [markup]
@@ -35,5 +40,4 @@ avatar = "logo.webp"
       [markup.goldmark.parser.attribute]
         block = true
         title = true
-
 
