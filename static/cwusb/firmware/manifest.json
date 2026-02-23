@@ -2,6 +2,15 @@
   "latest": "cw_usb_v1_picozero_20260219T184453Z_ad07f6f",
   "firmwares": [
     {
+      "name": "Beta release with SmartSDR support",
+      "version": "cw_usb_v1_picozero_20260223T060300Z_ad07f6f_beta",
+      "url": "firmware/cw_usb_v1_picozero_20260223T060300Z_ad07f6f_beta.uf2",
+      "size": 150016,
+      "channel": "beta",
+      "board": "picozero",
+      "date": "2026-02-23"
+    },
+    {
       "name": "First version",
       "version": "cw_usb_v1_picozero_20260219T184453Z_ad07f6f",
       "url": "firmware/cw_usb_v1_picozero_20260219T184453Z_ad07f6f.uf2",
@@ -9,15 +18,6 @@
       "channel": "stable",
       "board": "picozero",
       "date": "2026-02-19"
-    },
-    {
-      "name": "Beta release with SmartSDR support",
-      "version": "cw_usb_v1_picozero_20260222T203709Z_ad07f6f",
-      "url": "firmware/cw_usb_v1_picozero_20260222T203709Z_ad07f6f.uf2",
-      "size": 150016,
-      "channel": "beta",
-      "board": "picozero",
-      "date": "2026-02-22"
     }
   ]
 }
