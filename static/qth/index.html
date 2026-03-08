@@ -63,6 +63,11 @@
       gap: clamp(8px, 2vmin, 18px);
     }
     .top {
+      position: fixed;
+      left: max(12px, env(safe-area-inset-left));
+      right: max(12px, env(safe-area-inset-right));
+      top: max(10px, env(safe-area-inset-top));
+      z-index: 5;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -111,18 +116,23 @@
       transform: translateY(1px) scale(0.99);
     }
     .readouts {
+      position: fixed;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: min(920px, calc(100% - 24px));
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: clamp(14px, 2.4vmin, 24px);
-      min-height: 100%;
+      gap: clamp(14px, 2.6vmin, 28px);
       text-align: center;
+      z-index: 1;
     }
     .locator-wrap {
-      display: inline-grid;
-      justify-items: center;
-      gap: clamp(4px, 0.9vmin, 10px);
+      display: inline-flex;
+      align-items: center;
+      gap: clamp(8px, 1.4vmin, 14px);
     }
     .label {
       margin: 0;
@@ -169,7 +179,7 @@
       padding: 0.2rem;
       border-radius: 999px;
       line-height: 1;
-      font-size: clamp(2.2rem, 8.2vmin, 4rem);
+      font-size: clamp(1.7rem, 5.8vmin, 3rem);
       display: inline-grid;
       place-items: center;
       align-self: center;
@@ -293,11 +303,17 @@
       color: var(--warn);
     }
     @media (orientation: landscape) and (max-height: 520px) {
+      .readouts {
+        gap: clamp(6px, 1.1vmin, 10px);
+      }
       .locator {
-        font-size: clamp(2.7rem, 10.5vmin, 6.6rem);
+        font-size: clamp(2.4rem, 8.7vmin, 5.8rem);
       }
       .clock {
-        font-size: clamp(1.6rem, 6.6vmin, 4rem);
+        font-size: clamp(1.35rem, 5.3vmin, 3.2rem);
+      }
+      .date {
+        font-size: clamp(0.72rem, 1.9vmin, 1.02rem);
       }
     }
   </style>
@@ -454,12 +470,6 @@
       function precisionFromAccuracy(accuracyMeters) {
         if (!Number.isFinite(accuracyMeters)) {
           return 4;
-        }
-        if (accuracyMeters <= 20) {
-          return 10;
-        }
-        if (accuracyMeters <= 100) {
-          return 8;
         }
         if (accuracyMeters <= 2000) {
           return 6;
