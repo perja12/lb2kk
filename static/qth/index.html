@@ -6,6 +6,7 @@
   <meta name="description" content="QTH Locator: Maidenhead locator from device position, live UTC/local clock, installable and offline-capable." />
   <meta name="theme-color" content="#f8fafc" />
   <title>QTH Locator</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@600;700&display=swap" rel="stylesheet" />
@@ -78,6 +79,14 @@
       gap: 8px;
       align-items: center;
     }
+    .aux-ui {
+      opacity: 1;
+      transition: opacity 220ms ease;
+    }
+    body.ui-dimmed .aux-ui {
+      opacity: 0;
+      pointer-events: none;
+    }
     .install-btn[hidden] {
       display: none;
     }
@@ -96,9 +105,39 @@
       border-radius: 999px;
       font-weight: 700;
       font-size: clamp(0.8rem, 1.8vmin, 0.95rem);
-      padding: 0.45rem 0.75rem;
+      padding: 0.45rem 0.65rem;
       cursor: pointer;
       transition: background-color 120ms ease, transform 90ms ease;
+    }
+    .icon-btn {
+      min-width: 2.6rem;
+      font-size: clamp(1.05rem, 2.2vmin, 1.3rem);
+      line-height: 1;
+      font-weight: 700;
+    }
+    .top-icon-btn {
+      border: 0;
+      background: transparent;
+      padding: 0.2rem;
+      min-width: 0;
+      color: var(--fg);
+      opacity: 0.9;
+    }
+    .top-icon-btn:hover,
+    .top-icon-btn:focus-visible {
+      opacity: 1;
+      background: transparent;
+      outline: none;
+    }
+    .top-icon-btn:active,
+    .top-icon-btn.is-pressed {
+      background: transparent;
+      transform: translateY(1px) scale(0.94);
+    }
+    .material-icons {
+      font-size: clamp(1.4rem, 2.8vmin, 1.8rem);
+      line-height: 1;
+      display: block;
     }
     .theme-btn:focus-visible,
     .install-btn:focus-visible,
@@ -121,6 +160,7 @@
       top: 50%;
       transform: translate(-50%, -50%);
       width: min(920px, calc(100% - 24px));
+      container-type: inline-size;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -130,9 +170,8 @@
       z-index: 1;
     }
     .locator-wrap {
-      display: inline-flex;
-      align-items: center;
-      gap: clamp(8px, 1.4vmin, 14px);
+      position: relative;
+      display: inline-block;
     }
     .label {
       margin: 0;
@@ -144,7 +183,7 @@
     }
     .locator {
       margin: 0;
-      font-size: clamp(3rem, 15vmin, 9.8rem);
+      font-size: clamp(2.6rem, 17cqw, 10rem);
       line-height: 1;
       letter-spacing: 0.06em;
       font-weight: 800;
@@ -172,6 +211,9 @@
       border-radius: 10px;
     }
     .refresh-btn {
+      position: absolute;
+      left: 100%;
+      top: 50%;
       border: 0;
       background: transparent;
       color: var(--muted);
@@ -182,7 +224,7 @@
       font-size: clamp(1.7rem, 5.8vmin, 3rem);
       display: inline-grid;
       place-items: center;
-      align-self: center;
+      transform: translate(clamp(6px, 1.2vmin, 12px), -50%);
       transition: opacity 120ms ease, background-color 120ms ease, color 120ms ease, transform 90ms ease;
     }
     .refresh-btn:hover,
@@ -197,18 +239,20 @@
       opacity: 1;
       color: var(--fg);
       background: transparent;
-      transform: translateY(2px) scale(0.92);
+      transform: translate(clamp(6px, 1.2vmin, 12px), calc(-50% + 2px)) scale(0.92);
       box-shadow: none;
     }
     .clock {
       margin: 0;
-      font-size: clamp(1.8rem, 8vmin, 5rem);
+      font-size: clamp(1.45rem, 8.8cqw, 5.2rem);
       line-height: 1;
       letter-spacing: 0.08em;
       font-weight: 700;
       font-family: "Fira Code", "Consolas", "DejaVu Sans Mono", monospace;
       font-feature-settings: "zero" 1;
       font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+      word-break: keep-all;
     }
     .clock-btn {
       border: 0;
@@ -229,7 +273,7 @@
     }
     .date {
       margin: 0;
-      font-size: clamp(0.95rem, 2.8vmin, 1.55rem);
+      font-size: clamp(0.85rem, 3.2cqw, 1.6rem);
       line-height: 1.1;
       letter-spacing: 0.06em;
       font-weight: 700;
@@ -307,13 +351,13 @@
         gap: clamp(6px, 1.1vmin, 10px);
       }
       .locator {
-        font-size: clamp(2.4rem, 8.7vmin, 5.8rem);
+        font-size: clamp(2.1rem, 12.5cqw, 6.2rem);
       }
       .clock {
-        font-size: clamp(1.35rem, 5.3vmin, 3.2rem);
+        font-size: clamp(1.2rem, 6.6cqw, 3.4rem);
       }
       .date {
-        font-size: clamp(0.72rem, 1.9vmin, 1.02rem);
+        font-size: clamp(0.66rem, 2.35cqw, 1.05rem);
       }
     }
   </style>
@@ -321,10 +365,10 @@
 <body>
   <main class="app" role="main">
     <header class="top">
-      <h1 class="title">QTH Locator</h1>
-      <div class="controls">
-        <button id="installBtn" class="install-btn" type="button" hidden aria-label="Install app">Install</button>
-        <button id="themeBtn" class="theme-btn" type="button" aria-label="Toggle dark and light theme">Theme</button>
+      <h1 class="title" aria-hidden="true"></h1>
+      <div class="controls aux-ui">
+        <button id="installBtn" class="install-btn icon-btn top-icon-btn" type="button" hidden aria-label="Install app" title="Install app"><span class="material-icons" aria-hidden="true">download</span></button>
+        <button id="themeBtn" class="theme-btn icon-btn top-icon-btn" type="button" aria-label="Toggle dark and light theme" title="Toggle theme"><span class="material-icons" aria-hidden="true">contrast</span></button>
       </div>
     </header>
 
@@ -337,12 +381,12 @@
       <p id="date" class="date">1970-01-01</p>
     </section>
 
-    <p id="status" class="status"></p>
+    <p id="status" class="status aux-ui"></p>
   </main>
   <span id="locatorHint" class="sr-only">Click to start location, then click again to copy locator to clipboard.</span>
   <span id="clockHint" class="sr-only">Tap to toggle UTC and local time.</span>
-  <a class="back-link" href="https://lb2kk.no/">Back to lb2kk.no</a>
-  <a class="credits" href="https://github.com/jleh/qth-locator" target="_blank" rel="noopener noreferrer">Credits: qth-locator by jleh (MIT)</a>
+  <a class="back-link aux-ui" href="https://lb2kk.no/">By lb2kk.no</a>
+  <a class="credits aux-ui" href="https://github.com/jleh/qth-locator" target="_blank" rel="noopener noreferrer">Credits: qth-locator by jleh (MIT)</a>
 
   <script src="vendor/qth-locator.js"></script>
   <script>
@@ -352,9 +396,11 @@
       var dateEl = document.getElementById('date');
       var statusEl = document.getElementById('status');
       var themeBtn = document.getElementById('themeBtn');
+      var themeIconEl = themeBtn.querySelector('.material-icons');
       var refreshBtn = document.getElementById('refreshBtn');
       var installBtn = document.getElementById('installBtn');
       var root = document.documentElement;
+      var body = document.body;
       var clockMode = 'utc';
       var deferredInstallPrompt = null;
       var demoMode = false;
@@ -365,6 +411,8 @@
       var watchId = null;
       var shouldShowGetLocationHint = true;
       var HINT_SEEN_KEY = 'qth-location-hint-seen';
+      var uiHideTimer = null;
+      var uiVisibleMs = 4500;
 
       function pad(value) {
         return String(value).padStart(2, '0');
@@ -417,6 +465,14 @@
       function setStatus(message, isError) {
         statusEl.textContent = message;
         statusEl.classList.toggle('error', Boolean(isError));
+      }
+
+      function showAuxUi() {
+        body.classList.remove('ui-dimmed');
+        window.clearTimeout(uiHideTimer);
+        uiHideTimer = window.setTimeout(function () {
+          body.classList.add('ui-dimmed');
+        }, uiVisibleMs);
       }
 
       function setTemporaryStatus(message, isError, durationMs) {
@@ -533,16 +589,27 @@
       function applyTheme(theme) {
         root.dataset.theme = theme;
         localStorage.setItem('qth-theme', theme);
+        updateThemeIcon();
+      }
+
+      function updateThemeIcon() {
+        var current = root.dataset.theme === 'dark' ? 'dark' : 'light';
+        var nextMode = current === 'dark' ? 'light' : 'dark';
+        themeIconEl.textContent = nextMode === 'dark' ? 'dark_mode' : 'light_mode';
+        themeBtn.title = nextMode === 'dark' ? 'Switch to dark theme' : 'Switch to light theme';
+        themeBtn.setAttribute('aria-label', themeBtn.title);
       }
 
       function initTheme() {
         var stored = localStorage.getItem('qth-theme');
         if (stored === 'light' || stored === 'dark') {
           root.dataset.theme = stored;
+          updateThemeIcon();
           return;
         }
         var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
         root.dataset.theme = prefersDark ? 'dark' : 'light';
+        updateThemeIcon();
       }
 
       function setIdlePrompt(showHint) {
@@ -627,7 +694,7 @@
         var precision = precisionFromAccuracy(coords.accuracy);
         var locator = window.QTHLocator.fromLatLon(coords.latitude, coords.longitude, precision);
         locatorEl.textContent = locator;
-        setStatus('Location OK (accuracy ±' + Math.round(coords.accuracy) + ' m)', false);
+        setStatus('Location OK (+/- ' + Math.round(coords.accuracy) + 'm)', false);
       }
 
       function handlePositionError(err, keepLocatorIfPresent) {
@@ -756,6 +823,10 @@
       addPressFeedback(clockEl);
       clockEl.addEventListener('click', toggleClockMode);
 
+      document.addEventListener('pointerdown', showAuxUi, { passive: true });
+      document.addEventListener('keydown', showAuxUi);
+      document.addEventListener('focusin', showAuxUi);
+
       initTheme();
       initClockMode();
       setupInstallPrompt();
@@ -763,6 +834,7 @@
       renderClock();
       setInterval(renderClock, 1000);
       registerServiceWorker();
+      showAuxUi();
     })();
   </script>
 </body>
