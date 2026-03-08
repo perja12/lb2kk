@@ -1,0 +1,759 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="description" content="QTH Locator: Maidenhead locator from device position, live UTC/local clock, installable and offline-capable." />
+  <meta name="theme-color" content="#f8fafc" />
+  <title>QTH Locator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/compass-192.png" />
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f3efe2;
+      --fg: #0b1220;
+      --muted: #334155;
+      --accent: #0f766e;
+      --press-bg: #e7dfc9;
+      --warn: #b91c1c;
+      --focus: #075985;
+      font-family: "Segoe UI", "Roboto", sans-serif;
+    }
+    :root[data-theme="dark"] {
+      --bg: #1a1d21;
+      --fg: #f8fafc;
+      --muted: #cbd5e1;
+      --accent: #5eead4;
+      --press-bg: #1e293b;
+      --warn: #fca5a5;
+      --focus: #7dd3fc;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    html,
+    body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--fg);
+    }
+    body {
+      min-height: 100dvh;
+      display: grid;
+      align-items: stretch;
+      justify-items: stretch;
+      padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+    }
+    .app {
+      width: min(980px, 100%);
+      max-width: 980px;
+      height: 100%;
+      margin: 0 auto;
+      background: transparent;
+      padding: clamp(14px, 2.4vmin, 26px);
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: clamp(8px, 2vmin, 18px);
+    }
+    .top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+    .controls {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .install-btn[hidden] {
+      display: none;
+    }
+    .title {
+      margin: 0;
+      letter-spacing: 0.04em;
+      font-size: clamp(1rem, 2.2vmin, 1.3rem);
+      text-transform: uppercase;
+    }
+    .theme-btn,
+    .install-btn,
+    .refresh-btn {
+      border: 2px solid var(--fg);
+      background: transparent;
+      color: var(--fg);
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: clamp(0.8rem, 1.8vmin, 0.95rem);
+      padding: 0.45rem 0.75rem;
+      cursor: pointer;
+      transition: background-color 120ms ease, transform 90ms ease;
+    }
+    .theme-btn:focus-visible,
+    .install-btn:focus-visible,
+    .refresh-btn:focus-visible {
+      outline: 3px solid var(--focus);
+      outline-offset: 2px;
+    }
+    .theme-btn:active,
+    .install-btn:active,
+    .refresh-btn:active,
+    .theme-btn.is-pressed,
+    .install-btn.is-pressed,
+    .refresh-btn.is-pressed {
+      background: var(--press-bg);
+      transform: translateY(1px) scale(0.99);
+    }
+    .readouts {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(14px, 2.4vmin, 24px);
+      min-height: 100%;
+      text-align: center;
+    }
+    .locator-wrap {
+      display: inline-grid;
+      justify-items: center;
+      gap: clamp(4px, 0.9vmin, 10px);
+    }
+    .label {
+      margin: 0;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      font-size: clamp(0.72rem, 1.8vmin, 1rem);
+      font-weight: 700;
+    }
+    .locator {
+      margin: 0;
+      font-size: clamp(3rem, 15vmin, 9.8rem);
+      line-height: 1;
+      letter-spacing: 0.06em;
+      font-weight: 800;
+      font-family: "Fira Code", "Consolas", "DejaVu Sans Mono", monospace;
+      font-feature-settings: "zero" 1;
+      font-variant-numeric: slashed-zero tabular-nums;
+      overflow-wrap: anywhere;
+      background: none;
+      border: 0;
+      color: inherit;
+      cursor: pointer;
+      padding: 0;
+      font-family: inherit;
+      text-align: center;
+      transition: background-color 120ms ease, transform 90ms ease;
+    }
+    .locator:focus-visible {
+      outline: 3px solid var(--focus);
+      outline-offset: 4px;
+    }
+    .locator:active,
+    .locator.is-pressed {
+      background: var(--press-bg);
+      transform: translateY(1px) scale(0.995);
+      border-radius: 10px;
+    }
+    .refresh-btn {
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      opacity: 0.65;
+      padding: 0.2rem;
+      border-radius: 999px;
+      line-height: 1;
+      font-size: clamp(2.2rem, 8.2vmin, 4rem);
+      display: inline-grid;
+      place-items: center;
+      align-self: center;
+      transition: opacity 120ms ease, background-color 120ms ease, color 120ms ease, transform 90ms ease;
+    }
+    .refresh-btn:hover,
+    .refresh-btn:focus-visible {
+      opacity: 1;
+      color: var(--fg);
+      background: transparent;
+      outline: none;
+    }
+    .refresh-btn:active,
+    .refresh-btn.is-pressed {
+      opacity: 1;
+      color: var(--fg);
+      background: transparent;
+      transform: translateY(2px) scale(0.92);
+      box-shadow: none;
+    }
+    .clock {
+      margin: 0;
+      font-size: clamp(1.8rem, 8vmin, 5rem);
+      line-height: 1;
+      letter-spacing: 0.08em;
+      font-weight: 700;
+      font-family: "Fira Code", "Consolas", "DejaVu Sans Mono", monospace;
+      font-feature-settings: "zero" 1;
+      font-variant-numeric: tabular-nums;
+    }
+    .clock-btn {
+      border: 0;
+      background: transparent;
+      color: inherit;
+      padding: 0.1rem 0.2rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 90ms ease;
+    }
+    .clock-btn:focus-visible {
+      outline: 3px solid var(--focus);
+      outline-offset: 4px;
+    }
+    .clock-btn:active,
+    .clock-btn.is-pressed {
+      transform: translateY(1px) scale(0.99);
+    }
+    .date {
+      margin: 0;
+      font-size: clamp(0.95rem, 2.8vmin, 1.55rem);
+      line-height: 1.1;
+      letter-spacing: 0.06em;
+      font-weight: 700;
+      color: var(--muted);
+      font-family: "Fira Code", "Consolas", "DejaVu Sans Mono", monospace;
+      font-feature-settings: "zero" 1;
+      font-variant-numeric: tabular-nums;
+    }
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+    .status {
+      position: fixed;
+      left: max(12px, env(safe-area-inset-left));
+      bottom: max(30px, calc(env(safe-area-inset-bottom) + 18px));
+      margin: 0;
+      text-align: left;
+      color: var(--muted);
+      font-size: clamp(0.72rem, 1.7vmin, 0.9rem);
+      min-height: 0;
+      font-weight: 700;
+      max-width: min(62vw, 760px);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .back-link {
+      position: fixed;
+      right: max(12px, env(safe-area-inset-right));
+      bottom: max(30px, calc(env(safe-area-inset-bottom) + 18px));
+      color: var(--muted);
+      font-size: clamp(0.72rem, 1.7vmin, 0.9rem);
+      text-decoration: none;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      padding: 4px 6px;
+      border-radius: 6px;
+    }
+    .back-link:hover,
+    .back-link:focus-visible {
+      color: var(--fg);
+      background: var(--press-bg);
+      outline: none;
+    }
+    .credits {
+      position: fixed;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: max(6px, env(safe-area-inset-bottom));
+      color: var(--muted);
+      font-size: clamp(0.62rem, 1.45vmin, 0.78rem);
+      text-decoration: none;
+      white-space: nowrap;
+      opacity: 0.9;
+    }
+    .credits:hover,
+    .credits:focus-visible {
+      color: var(--fg);
+      outline: none;
+      text-decoration: underline;
+    }
+    .status.error {
+      color: var(--warn);
+    }
+    @media (orientation: landscape) and (max-height: 520px) {
+      .locator {
+        font-size: clamp(2.7rem, 10.5vmin, 6.6rem);
+      }
+      .clock {
+        font-size: clamp(1.6rem, 6.6vmin, 4rem);
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app" role="main">
+    <header class="top">
+      <h1 class="title">QTH Locator</h1>
+      <div class="controls">
+        <button id="installBtn" class="install-btn" type="button" hidden aria-label="Install app">Install</button>
+        <button id="themeBtn" class="theme-btn" type="button" aria-label="Toggle dark and light theme">Theme</button>
+      </div>
+    </header>
+
+    <section class="readouts" aria-live="polite">
+      <div class="locator-wrap">
+        <button id="locator" class="locator" type="button" aria-describedby="locatorHint">Click Get Location</button>
+        <button id="refreshBtn" class="refresh-btn" type="button" aria-label="Refresh locator" title="Refresh locator">⟳</button>
+      </div>
+      <button id="clock" class="clock clock-btn" type="button" aria-describedby="clockHint" title="Toggle UTC/local time">00:00:00 UTC</button>
+      <p id="date" class="date">1970-01-01</p>
+    </section>
+
+    <p id="status" class="status"></p>
+  </main>
+  <span id="locatorHint" class="sr-only">Click to start location, then click again to copy locator to clipboard.</span>
+  <span id="clockHint" class="sr-only">Tap to toggle UTC and local time.</span>
+  <a class="back-link" href="https://lb2kk.no/">Back to lb2kk.no</a>
+  <a class="credits" href="https://github.com/jleh/qth-locator" target="_blank" rel="noopener noreferrer">Credits: qth-locator by jleh (MIT)</a>
+
+  <script src="vendor/qth-locator.js"></script>
+  <script>
+    (function () {
+      var locatorEl = document.getElementById('locator');
+      var clockEl = document.getElementById('clock');
+      var dateEl = document.getElementById('date');
+      var statusEl = document.getElementById('status');
+      var themeBtn = document.getElementById('themeBtn');
+      var refreshBtn = document.getElementById('refreshBtn');
+      var installBtn = document.getElementById('installBtn');
+      var root = document.documentElement;
+      var clockMode = 'utc';
+      var deferredInstallPrompt = null;
+      var demoMode = false;
+      var tapTimes = [];
+      var demoTapThreshold = 10;
+      var demoTapWindowMs = 2500;
+      var locationStarted = false;
+      var watchId = null;
+      var shouldShowGetLocationHint = true;
+      var HINT_SEEN_KEY = 'qth-location-hint-seen';
+
+      function pad(value) {
+        return String(value).padStart(2, '0');
+      }
+
+      function renderClock() {
+        var now = new Date();
+        if (clockMode === 'local') {
+          var zone = Intl.DateTimeFormat([], { timeZoneName: 'short' })
+            .formatToParts(now)
+            .find(function (part) { return part.type === 'timeZoneName'; });
+          var localZone = zone ? zone.value : 'LOCAL';
+          clockEl.textContent = [
+            pad(now.getHours()),
+            pad(now.getMinutes()),
+            pad(now.getSeconds())
+          ].join(':') + ' ' + localZone;
+          dateEl.textContent = [
+            now.getFullYear(),
+            pad(now.getMonth() + 1),
+            pad(now.getDate())
+          ].join('-');
+          return;
+        }
+        clockEl.textContent = [
+          pad(now.getUTCHours()),
+          pad(now.getUTCMinutes()),
+          pad(now.getUTCSeconds())
+        ].join(':') + ' UTC';
+        dateEl.textContent = [
+          now.getUTCFullYear(),
+          pad(now.getUTCMonth() + 1),
+          pad(now.getUTCDate())
+        ].join('-');
+      }
+
+      function initClockMode() {
+        var stored = localStorage.getItem('qth-clock-mode');
+        if (stored === 'utc' || stored === 'local') {
+          clockMode = stored;
+        }
+      }
+
+      function toggleClockMode() {
+        clockMode = clockMode === 'utc' ? 'local' : 'utc';
+        localStorage.setItem('qth-clock-mode', clockMode);
+        renderClock();
+      }
+
+      function setStatus(message, isError) {
+        statusEl.textContent = message;
+        statusEl.classList.toggle('error', Boolean(isError));
+      }
+
+      function setTemporaryStatus(message, isError, durationMs) {
+        var previousText = statusEl.textContent;
+        var previousIsError = statusEl.classList.contains('error');
+        setStatus(message, isError);
+        window.setTimeout(function () {
+          if (statusEl.textContent === message) {
+            setStatus(previousText, previousIsError);
+          }
+        }, durationMs);
+      }
+
+      function clearLocator(reason) {
+        if (locationStarted) {
+          locatorEl.textContent = '--';
+        } else {
+          locatorEl.textContent = shouldShowGetLocationHint ? 'Click Get Location' : '--';
+        }
+        setStatus(reason, true);
+      }
+
+      function hasLocatorValue() {
+        var text = (locatorEl.textContent || '').trim();
+        return text && text !== '--';
+      }
+
+      async function copyLocator() {
+        var locatorText = (locatorEl.textContent || '').trim();
+        if (!locatorText || locatorText === '--') {
+          setStatus('No locator to copy.', true);
+          return;
+        }
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(locatorText);
+          } else {
+            var input = document.createElement('input');
+            input.value = locatorText;
+            document.body.appendChild(input);
+            input.select();
+            document.execCommand('copy');
+            document.body.removeChild(input);
+          }
+          setTemporaryStatus('Locator copied to clipboard.', false, 5000);
+        } catch (err) {
+          setStatus('Copy failed. Clipboard access was denied.', true);
+        }
+      }
+
+      function precisionFromAccuracy(accuracyMeters) {
+        if (!Number.isFinite(accuracyMeters)) {
+          return 4;
+        }
+        if (accuracyMeters <= 20) {
+          return 10;
+        }
+        if (accuracyMeters <= 100) {
+          return 8;
+        }
+        if (accuracyMeters <= 2000) {
+          return 6;
+        }
+        return 4;
+      }
+
+      function randomChar(source) {
+        return source.charAt(Math.floor(Math.random() * source.length));
+      }
+
+      function generateFakeLocator(length) {
+        var safeLength = Math.max(4, Math.min(10, Number(length) || 8));
+        if (safeLength % 2 !== 0) {
+          safeLength -= 1;
+        }
+        var locator = '';
+        var pairs = safeLength / 2;
+        for (var i = 0; i < pairs; i += 1) {
+          if (i === 0) {
+            locator += randomChar('ABCDEFGHIJKLMNOPQR');
+            locator += randomChar('ABCDEFGHIJKLMNOPQR');
+          } else if (i === 1) {
+            locator += randomChar('0123456789');
+            locator += randomChar('0123456789');
+          } else if (i === 2) {
+            locator += randomChar('abcdefghijklmnopqrstuvwx');
+            locator += randomChar('abcdefghijklmnopqrstuvwx');
+          } else if (i === 3) {
+            locator += randomChar('0123456789');
+            locator += randomChar('0123456789');
+          } else {
+            locator += randomChar('abcdefghijklmnopqrstuvwx');
+            locator += randomChar('abcdefghijklmnopqrstuvwx');
+          }
+        }
+        return locator;
+      }
+
+      function activateDemoMode() {
+        demoMode = true;
+        var currentLength = (locatorEl.textContent || '').trim().replace(/[^A-Za-z0-9]/g, '').length;
+        locatorEl.textContent = generateFakeLocator(currentLength || 8);
+        setTemporaryStatus('Demo mode: fake locator active.', false, 5000);
+      }
+
+      function registerLocatorTap() {
+        var now = Date.now();
+        tapTimes.push(now);
+        tapTimes = tapTimes.filter(function (t) {
+          return now - t <= demoTapWindowMs;
+        });
+        if (tapTimes.length >= demoTapThreshold) {
+          tapTimes = [];
+          activateDemoMode();
+          return true;
+        }
+        return false;
+      }
+
+      function applyTheme(theme) {
+        root.dataset.theme = theme;
+        localStorage.setItem('qth-theme', theme);
+      }
+
+      function initTheme() {
+        var stored = localStorage.getItem('qth-theme');
+        if (stored === 'light' || stored === 'dark') {
+          root.dataset.theme = stored;
+          return;
+        }
+        var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        root.dataset.theme = prefersDark ? 'dark' : 'light';
+      }
+
+      function setIdlePrompt(showHint) {
+        shouldShowGetLocationHint = Boolean(showHint);
+        if (locationStarted) {
+          return;
+        }
+        locatorEl.textContent = shouldShowGetLocationHint ? 'Click Get Location' : '--';
+        if (shouldShowGetLocationHint) {
+          setStatus('Click Get Location to enable GPS and show your locator.', false);
+        } else {
+          setStatus('', false);
+        }
+      }
+
+      function markHintSeen() {
+        localStorage.setItem(HINT_SEEN_KEY, '1');
+      }
+
+      async function initIdlePromptState() {
+        var seenHint = localStorage.getItem(HINT_SEEN_KEY) === '1';
+        var denied = false;
+
+        if (navigator.permissions && navigator.permissions.query) {
+          try {
+            var perm = await navigator.permissions.query({ name: 'geolocation' });
+            denied = perm.state === 'denied';
+          } catch (err) {
+            // Some browsers don't fully support permissions query for geolocation.
+          }
+        }
+
+        if (denied) {
+          setIdlePrompt(true);
+          return;
+        }
+
+        if (!seenHint) {
+          setIdlePrompt(true);
+          return;
+        }
+
+        setIdlePrompt(false);
+        startLocationWatch(false);
+      }
+
+      function startLocationWatch(markHintAsSeen) {
+        if (locationStarted) {
+          return;
+        }
+        if (!('geolocation' in navigator)) {
+          clearLocator('Location unavailable: this device/browser has no geolocation support.');
+          return;
+        }
+        if (markHintAsSeen) {
+          markHintSeen();
+        }
+        locationStarted = true;
+        setStatus('Requesting location permission...', false);
+
+        watchId = navigator.geolocation.watchPosition(
+          function (pos) {
+            handlePosition(pos);
+          },
+          function (err) {
+            handlePositionError(err, false);
+          },
+          {
+            enableHighAccuracy: true,
+            maximumAge: 15000,
+            timeout: 20000
+          }
+        );
+      }
+
+      function handlePosition(pos) {
+        if (demoMode) {
+          return;
+        }
+        markHintSeen();
+        var coords = pos.coords;
+        var precision = precisionFromAccuracy(coords.accuracy);
+        var locator = window.QTHLocator.fromLatLon(coords.latitude, coords.longitude, precision);
+        locatorEl.textContent = locator;
+        setStatus('Location OK (accuracy ±' + Math.round(coords.accuracy) + ' m)', false);
+      }
+
+      function handlePositionError(err, keepLocatorIfPresent) {
+        var reason = 'Location unavailable.';
+        if (err && typeof err.code === 'number') {
+          if (err.code === 1) {
+            reason = 'Location unavailable: permission denied.';
+            if (watchId !== null) {
+              navigator.geolocation.clearWatch(watchId);
+              watchId = null;
+            }
+            locationStarted = false;
+            setIdlePrompt(true);
+          } else if (err.code === 2) {
+            reason = 'Location unavailable: position cannot be determined.';
+          } else if (err.code === 3) {
+            reason = 'Location unavailable: request timed out.';
+          }
+        }
+        if (keepLocatorIfPresent && hasLocatorValue()) {
+          setStatus(reason, true);
+          return;
+        }
+        clearLocator(reason);
+      }
+
+      function refreshLocator() {
+        if (!('geolocation' in navigator)) {
+          clearLocator('Location unavailable: this device/browser has no geolocation support.');
+          return;
+        }
+        if (!locationStarted) {
+          startLocationWatch(false);
+        }
+        demoMode = false;
+        setStatus('Refreshing location...', false);
+        navigator.geolocation.getCurrentPosition(
+          function (pos) {
+            handlePosition(pos);
+          },
+          function (err) {
+            handlePositionError(err, true);
+          },
+          {
+            enableHighAccuracy: true,
+            maximumAge: 30000,
+            timeout: 20000
+          }
+        );
+      }
+
+      function registerServiceWorker() {
+        if (!('serviceWorker' in navigator)) {
+          return;
+        }
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register('sw.js').catch(function () {
+            setStatus('App loaded, but offline caching failed to initialize.', true);
+          });
+        });
+      }
+
+      function setupInstallPrompt() {
+        window.addEventListener('beforeinstallprompt', function (event) {
+          event.preventDefault();
+          deferredInstallPrompt = event;
+          installBtn.hidden = false;
+        });
+
+        window.addEventListener('appinstalled', function () {
+          deferredInstallPrompt = null;
+          installBtn.hidden = true;
+          setTemporaryStatus('App installed.', false, 5000);
+        });
+
+        installBtn.addEventListener('click', async function () {
+          if (deferredInstallPrompt) {
+            deferredInstallPrompt.prompt();
+            try {
+              await deferredInstallPrompt.userChoice;
+            } catch (err) {
+              // Ignore prompt result errors and let the browser handle UI outcome.
+            }
+            return;
+          }
+          setTemporaryStatus('Install: use browser menu and choose Add to Home Screen.', false, 5000);
+        });
+      }
+
+      themeBtn.addEventListener('click', function () {
+        var current = root.dataset.theme === 'dark' ? 'dark' : 'light';
+        applyTheme(current === 'dark' ? 'light' : 'dark');
+      });
+      locatorEl.addEventListener('click', function () {
+        if (!locationStarted) {
+          startLocationWatch(true);
+          return;
+        }
+        if (registerLocatorTap()) {
+          return;
+        }
+        copyLocator();
+      });
+      refreshBtn.addEventListener('click', refreshLocator);
+
+      function addPressFeedback(el) {
+        var clearTimer = null;
+        el.addEventListener('pointerdown', function () {
+          el.classList.add('is-pressed');
+        });
+        function clearPressedSoon() {
+          window.clearTimeout(clearTimer);
+          clearTimer = window.setTimeout(function () {
+            el.classList.remove('is-pressed');
+          }, 120);
+        }
+        el.addEventListener('pointerup', clearPressedSoon);
+        el.addEventListener('pointercancel', clearPressedSoon);
+        el.addEventListener('mouseleave', clearPressedSoon);
+      }
+
+      addPressFeedback(locatorEl);
+      addPressFeedback(refreshBtn);
+      addPressFeedback(themeBtn);
+      addPressFeedback(installBtn);
+      addPressFeedback(clockEl);
+      clockEl.addEventListener('click', toggleClockMode);
+
+      initTheme();
+      initClockMode();
+      setupInstallPrompt();
+      initIdlePromptState();
+      renderClock();
+      setInterval(renderClock, 1000);
+      registerServiceWorker();
+    })();
+  </script>
+</body>
+</html>

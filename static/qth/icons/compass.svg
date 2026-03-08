@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Compass rose icon">
+  <rect width="512" height="512" rx="96" fill="#111827"/>
+
+  <circle cx="256" cy="256" r="190" fill="none" stroke="#f8fafc" stroke-width="20"/>
+  <circle cx="256" cy="256" r="134" fill="none" stroke="#f8fafc" stroke-width="10" opacity="0.9"/>
+
+  <polygon points="256,78 292,232 256,212 220,232" fill="#ef4444"/>
+  <polygon points="434,256 280,292 300,256 280,220" fill="#f8fafc"/>
+  <polygon points="256,434 220,280 256,300 292,280" fill="#f8fafc"/>
+  <polygon points="78,256 232,220 212,256 232,292" fill="#f8fafc"/>
+
+  <polygon points="256,126 276,220 256,210 236,220" fill="#fca5a5"/>
+  <polygon points="386,256 292,276 302,256 292,236" fill="#cbd5e1"/>
+  <polygon points="256,386 236,292 256,302 276,292" fill="#cbd5e1"/>
+  <polygon points="126,256 220,236 210,256 220,276" fill="#cbd5e1"/>
+
+  <circle cx="256" cy="256" r="18" fill="#f8fafc"/>
+  <text x="256" y="56" text-anchor="middle" font-family="'Segoe UI', sans-serif" font-size="42" font-weight="700" fill="#f8fafc">N</text>
+</svg>
