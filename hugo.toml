@@ -36,6 +36,11 @@ avatar = "logo.webp"
     name = "QTH Locator"
     url = "/qth/"
     weight = 4
+  [[menu.main]]
+    identifier = "battery"
+    name = "Battery Status"
+    url = "/battery/"
+    weight = 5
 
 
 [markup]

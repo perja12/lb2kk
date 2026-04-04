@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="description" content="Battery status monitor for amateur radio batteries over BLE." />
+  <meta name="theme-color" content="#f3efe2" />
+  <title>Battery Status</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@500;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icons/battery-192.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="app">
+    <header class="top">
+      <h1 class="title">Battery Status</h1>
+      <div class="controls">
+        <button id="installBtn" class="install-btn icon-btn top-icon-btn" type="button" hidden aria-label="Install app" title="Install app"><span class="material-icons" aria-hidden="true">download</span></button>
+        <button id="themeBtn" class="theme-btn icon-btn top-icon-btn" type="button" aria-label="Toggle dark and light theme" title="Toggle theme"><span class="material-icons" aria-hidden="true">contrast</span></button>
+      </div>
+    </header>
+    <section class="device-name-row">
+      <span class="label">Battery</span>
+      <strong id="displayDeviceName" class="device-name-value">-</strong>
+      <button id="editDeviceNameBtn" class="edit-name-btn small" type="button" aria-label="Edit local battery name" title="Edit local battery name" disabled><span class="material-symbols-outlined" aria-hidden="true">edit</span></button>
+    </section>
+
+    <section id="unsupportedBanner" class="banner banner-error" hidden></section>
+
+    <section class="actions">
+      <button id="connectBtn" class="primary" type="button">Connect</button>
+    </section>
+
+    <section class="readouts" aria-live="polite">
+      <article class="metric-card">
+        <h2>Pack</h2>
+        <p id="packVoltage" class="metric">--.- V</p>
+        <p id="packCurrent" class="submetric">--.- A</p>
+      </article>
+      <article class="metric-card">
+        <h2>SOC</h2>
+        <p id="socPercent" class="metric">-- %</p>
+        <p id="capacityRemaining" class="submetric">-- Ah</p>
+      </article>
+      <article class="metric-card">
+        <h2>Temp</h2>
+        <p id="temperature" class="metric">--.- C</p>
+        <p id="statusText" class="submetric">Idle</p>
+      </article>
+    </section>
+
+    <details class="details">
+      <summary>Details</summary>
+      <div class="details-grid">
+        <p><strong>Protocol:</strong> <span id="activeProtocol">-</span></p>
+        <p><strong>Device:</strong> <span id="deviceName">-</span></p>
+        <p><strong>Cycle Count:</strong> <span id="cycleCount">-</span></p>
+        <p><strong>Signal:</strong> <span id="signalRssi">-</span></p>
+        <p><strong>Last Update:</strong> <span id="lastUpdate">-</span></p>
+        <p><strong>Cells:</strong> <span id="cells">-</span></p>
+        <p><strong>Status Flags:</strong> <span id="statusFlags">-</span></p>
+      </div>
+      <p id="statusLine" class="status">Ready.</p>
+      <label class="label" for="rawFrame">Raw frame (latest)</label>
+      <textarea id="rawFrame" rows="4" readonly></textarea>
+    </details>
+    <a class="back-link" href="https://lb2kk.no/">By lb2kk.no</a>
+  </main>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
