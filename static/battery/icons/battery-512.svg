@@ -1,7 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="72" fill="#0f766e"/>
-  <rect x="90" y="150" width="300" height="210" rx="26" fill="#f8fafc"/>
-  <rect x="390" y="220" width="34" height="70" rx="8" fill="#f8fafc"/>
-  <rect x="115" y="176" width="122" height="160" rx="14" fill="#0f766e"/>
-  <path d="M279 186h39l-22 52h30l-45 96 9-62h-31z" fill="#0f766e"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Battery icon">
+  <rect width="512" height="512" rx="96" fill="#111827"/>
+
+  <circle cx="256" cy="256" r="190" fill="none" stroke="#f8fafc" stroke-width="20"/>
+
+  <rect x="140" y="178" width="214" height="156" rx="24" fill="none" stroke="#f8fafc" stroke-width="18"/>
+  <rect x="354" y="226" width="26" height="60" rx="7" fill="#f8fafc"/>
+
+  <rect x="162" y="202" width="40" height="108" rx="10" fill="#f8fafc" opacity="0.95"/>
+
+  <path d="M260 204h44l-23 54h34l-54 104 11-66h-36z" fill="#ef4444"/>
+  <path d="M258 230h30l-14 34h22l-34 66 5-42h-22z" fill="#fca5a5"/>
 </svg>

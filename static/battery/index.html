@@ -17,59 +17,61 @@
 </head>
 <body>
   <main class="app">
-    <header class="top">
-      <h1 class="title">Battery Status</h1>
+    <header class="top aux-ui aux-ui-collapse">
+      <div class="title-wrap">
+        <h1 class="title">Battery Status</h1>
+        <a class="byline-link" href="https://lb2kk.no/">By lb2kk.no</a>
+      </div>
       <div class="controls">
         <button id="installBtn" class="install-btn icon-btn top-icon-btn" type="button" hidden aria-label="Install app" title="Install app"><span class="material-icons" aria-hidden="true">download</span></button>
         <button id="themeBtn" class="theme-btn icon-btn top-icon-btn" type="button" aria-label="Toggle dark and light theme" title="Toggle theme"><span class="material-icons" aria-hidden="true">contrast</span></button>
       </div>
     </header>
-    <section class="device-name-row">
-      <span class="label">Battery</span>
-      <strong id="displayDeviceName" class="device-name-value">-</strong>
-      <button id="editDeviceNameBtn" class="edit-name-btn small" type="button" aria-label="Edit local battery name" title="Edit local battery name" disabled><span class="material-symbols-outlined" aria-hidden="true">edit</span></button>
-    </section>
-
     <section id="unsupportedBanner" class="banner banner-error" hidden></section>
 
-    <section class="actions">
-      <button id="connectBtn" class="primary" type="button">Connect</button>
+    <section class="summary-card" aria-live="polite">
+      <canvas id="socSparkline" class="summary-sparkline" aria-hidden="true"></canvas>
+      <p class="summary-device-row">
+        <strong id="displayDeviceName" class="device-name-value">-</strong>
+        <button id="editDeviceNameBtn" class="edit-name-btn small aux-ui" type="button" aria-label="Edit local battery name" title="Edit local battery name" disabled><span class="material-symbols-outlined" aria-hidden="true">edit</span></button>
+      </p>
+      <p class="summary-line-primary">
+        <span id="packVoltage" class="summary-voltage">--.-- V</span>
+        <span id="socPercent" class="summary-soc">-- %</span>
+      </p>
+      <p class="summary-line-status">
+        <span id="statusText">Standby</span>
+        <span id="estTimeLeft" class="summary-est-time">-</span>
+      </p>
+      <p class="summary-line-secondary">
+        <span id="currentWithPeak" title="Current and Max Current">--.-- A (max: --.-- A)</span>
+        <span id="capacityRemaining" title="Capacity">--.- Ah</span>
+      </p>
     </section>
 
-    <section class="readouts" aria-live="polite">
-      <article class="metric-card">
-        <h2>Pack</h2>
-        <p id="packVoltage" class="metric">--.- V</p>
-        <p id="packCurrent" class="submetric">--.- A</p>
-      </article>
-      <article class="metric-card">
-        <h2>SOC</h2>
-        <p id="socPercent" class="metric">-- %</p>
-        <p id="capacityRemaining" class="submetric">-- Ah</p>
-      </article>
-      <article class="metric-card">
-        <h2>Temp</h2>
-        <p id="temperature" class="metric">--.- C</p>
-        <p id="statusText" class="submetric">Idle</p>
-      </article>
-    </section>
-
-    <details class="details">
+    <details class="details aux-ui aux-ui-collapse">
       <summary>Details</summary>
       <div class="details-grid">
         <p><strong>Protocol:</strong> <span id="activeProtocol">-</span></p>
         <p><strong>Device:</strong> <span id="deviceName">-</span></p>
+        <p><strong>Nominal Capacity:</strong> <input id="nominalCapacityAhInput" class="details-capacity-input" type="number" min="0" step="0.1" inputmode="decimal" placeholder="Ah" disabled /></p>
         <p><strong>Cycle Count:</strong> <span id="cycleCount">-</span></p>
+        <p><strong>Temperature:</strong> <span id="temperature">-</span></p>
         <p><strong>Signal:</strong> <span id="signalRssi">-</span></p>
         <p><strong>Last Update:</strong> <span id="lastUpdate">-</span></p>
         <p><strong>Cells:</strong> <span id="cells">-</span></p>
         <p><strong>Status Flags:</strong> <span id="statusFlags">-</span></p>
       </div>
+      <p class="details-actions">
+        <button id="resetStatsBtn" class="text-link-btn" type="button">Reset stats</button>
+      </p>
       <p id="statusLine" class="status">Ready.</p>
       <label class="label" for="rawFrame">Raw frame (latest)</label>
       <textarea id="rawFrame" rows="4" readonly></textarea>
     </details>
-    <a class="back-link" href="https://lb2kk.no/">By lb2kk.no</a>
+    <section id="actions" class="actions aux-ui-collapse">
+      <button id="connectBtn" class="primary" type="button">Connect</button>
+    </section>
   </main>
 
   <script type="module" src="js/app.js"></script>
