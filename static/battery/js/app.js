@@ -873,9 +873,45 @@ function initInstallPrompt() {
 
 function initServiceWorker() {
   if (!("serviceWorker" in navigator)) return;
-  navigator.serviceWorker.register("./sw.js").catch(() => {
-    // keep app usable without SW
-  });
+  navigator.serviceWorker.register("./sw.js", { updateViaCache: "none" })
+    .then((registration) => {
+      const onUpdateFound = () => {
+        const worker = registration.installing;
+        if (!worker) return;
+        worker.addEventListener("statechange", () => {
+          if (worker.state === "installed" && navigator.serviceWorker.controller) {
+            worker.postMessage({ type: "SKIP_WAITING" });
+          }
+        });
+      };
+
+      registration.addEventListener("updatefound", onUpdateFound);
+      onUpdateFound();
+
+      let reloadedForNewSw = false;
+      navigator.serviceWorker.addEventListener("controllerchange", () => {
+        if (reloadedForNewSw) return;
+        reloadedForNewSw = true;
+        window.location.reload();
+      });
+
+      window.setInterval(() => {
+        registration.update().catch(() => {
+          // ignore update check failures
+        });
+      }, 60 * 1000);
+
+      document.addEventListener("visibilitychange", () => {
+        if (!document.hidden) {
+          registration.update().catch(() => {
+            // ignore update check failures
+          });
+        }
+      });
+    })
+    .catch(() => {
+      // keep app usable without SW
+    });
 }
 
 function initAuxUiDimming() {
