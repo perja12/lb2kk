@@ -1,0 +1,30 @@
+{{- $buttonID := .Get "id" -}}
+{{- $containerID := printf "paypal-container-%s" $buttonID -}}
+<div class="paypal-button-panel">
+  <div id="{{ $containerID }}"></div>
+</div>
+<script>
+  (() => {
+    const container = document.getElementById({{ $containerID | jsonify | safeJS }});
+    const showFallback = () => {
+      container.textContent = "PayPal checkout could not be loaded. Please disable your content blocker or contact info@lb2kk.no.";
+    };
+
+    if (!window.paypal || typeof window.paypal.HostedButtons !== "function") {
+      showFallback();
+      return;
+    }
+
+    try {
+      const render = window.paypal.HostedButtons({
+        hostedButtonId: {{ $buttonID | jsonify | safeJS }},
+      }).render({{ printf "#%s" $containerID | jsonify | safeJS }});
+
+      if (render && typeof render.catch === "function") {
+        render.catch(showFallback);
+      }
+    } catch (error) {
+      showFallback();
+    }
+  })();
+</script>

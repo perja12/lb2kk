@@ -62,6 +62,41 @@ caption { color: rgba(255, 255, 255, 0.65); }
   height: auto;
 }
 
+.post-card__thumb {
+  position: relative;
+  display: block;
+  overflow: hidden;
+}
+
+.post-card__badge {
+  position: absolute;
+  bottom: 2rem;
+  left: -3.25rem;
+  width: 13rem;
+  padding: .65rem 0;
+  color: #fff;
+  background: #f04b2f;
+  border-top: 2px solid rgba(255, 255, 255, .75);
+  border-bottom: 2px solid rgba(255, 255, 255, .75);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .45);
+  font-size: .9rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  line-height: 1;
+  text-align: center;
+  text-transform: uppercase;
+  transform: rotate(45deg);
+}
+
+@media (max-width: 480px) {
+  .post-card__badge {
+    bottom: 1.4rem;
+    left: -3rem;
+    width: 11rem;
+    font-size: .75rem;
+  }
+}
+
 /* Space for the text area */
 .post-card__body { padding: .75rem .9rem 1rem; }
 
@@ -102,3 +137,12 @@ caption { color: rgba(255, 255, 255, 0.65); }
 
 /* when using gap, keep card margins at 0 so spacing isn't doubled */
 .post-card { margin: 0; }
+
+/* PayPal purchase panel */
+.paypal-button-panel {
+  margin: 1.5rem 0;
+  padding: 1.25rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+}

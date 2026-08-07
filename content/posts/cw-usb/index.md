@@ -2,14 +2,20 @@
 title = 'CW USB adapter'
 date = 2026-02-20T22:41:57+01:00
 draft = false
-summary = "Introducing the CW USB adapter!"
+summary = "Introducing the CW USB adapter! Update 07-08-2026: selling a few of these now if you are interested."
 tags = ['cw', 'cw usb adapter']
+card_badge = "Available now"
+paypal = true
 +++
 
-# CW USB adapter for practicing CW online
+# CW USB adapter for practicing morse online
 
 ![The first batch of CW USB adapters.](cw_usb_adapter.jpg)
 _The first batch of CW USB adapters._
+
+_Update 07-08-2026: The CW USB adapter can now be ordered! Only in blue for now. Please see the PayPal checkout form below. Please note that the shipping is included in the price. That was the easiest option I could find for shipping the adapter outside Norway. If you are Norwegian radio amateur or CW enthusiast: probably better/cheaper to contact me directly (info@lb2kk.no) or buy it at the annual ham meeting at Gardermoen._
+
+{{< paypal-hosted-button id="AJ32ESWNM5ANE" >}}
 
 For the last year or so, I have been trying to learn CW, also known as Morse code. Why, you might ask? It is no longer a requirement for the license, and it is not used professionally anymore either. First of all, I like a challenge, but CW is also a very efficient mode: the energy sent from the radio only occupies about 100 Hz. This is a good fit for lightweight POTA activations, but also if you live in a city with a lot of background noise (like me) or with a compromised antenna setup (yes, I have that as well).
 
@@ -34,10 +40,6 @@ _Configuration page available at https://lb2kk.no/cwusb._
 
 I made ten of these adapters for the annual [ham meeting](https://www.hammeeting.no/) here in Norway, and they turned out to be popular. I sold nine of them on the first evening :-) There were many interesting questions and discussions. One buyer wanted to use it with Morse Mania on his iPhone (that worked fine after reconfiguring it slightly), and another wanted to use it with Flex and SmartSDR (still working on that, but it should not be too difficult). All in all, a fun project.
 
-I do not have any ready-made CW USB adapters right now, but send me a line at info@lb2kk.no if you are interested in having one yourself.
-
 ![CW USB adapter with USB-C.](cw_usb_closeup.jpg)
 _CW USB adapter with USB-C._
 {style="width:50%"}
-
-

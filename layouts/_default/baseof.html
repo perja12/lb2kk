@@ -17,6 +17,9 @@
     {{ template "_internal/google_analytics.html" . }}
     {{ template "_internal/twitter_cards.html" . }}
     {{ template "_internal/opengraph.html" . }}
+    {{ if .Params.paypal }}
+      {{ partial "paypal-sdk.html" . }}
+    {{ end }}
 
   </head>
   <body>
