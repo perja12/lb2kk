@@ -810,8 +810,13 @@
       deviceCaps = null;
       if (!writer) return;
       try {
-        const caps = await sendCommand("caps?");
-        if (!caps || typeof caps !== "object") throw new Error("Invalid CAPS response");
+        const caps = await sendCommand("caps?", (response) =>
+          isErrorResponse(response) ||
+          (response && typeof response === "object" &&
+            typeof response.protocolVersion !== "undefined" &&
+            Array.isArray(response.commands))
+        );
+        if (isErrorResponse(caps)) throw new Error(caps.error || "CAPS? not supported");
         deviceCaps = {
           ...FALLBACK_CAPS,
           ...caps,
@@ -1022,7 +1027,7 @@
               if (!line.trim()) continue;
               try {
                 const json = JSON.parse(line);
-                if (pending.length) {
+                if (pending.length && pending[0].matches(json)) {
                   pending.shift().resolve(json);
                 } else if (!updateStatusUIFromResponseIfStatus(json)) {
                   appendLog(`Recv: ${line}`);
@@ -1039,14 +1044,14 @@
       }
     }
 
-    function sendCommand(cmd) {
+    function sendCommand(cmd, matches = () => true) {
       return new Promise((resolve, reject) => {
         if (!writer) {
           reject(new Error("Not connected"));
           return;
         }
         appendLog(`[CDC OUT] ${cmd}`);
-        pending.push({ resolve, reject });
+        pending.push({ resolve, reject, matches });
         writer.write(new TextEncoder().encode(cmd + "\n"));
         setTimeout(() => {
           const idx = pending.findIndex((p) => p.resolve === resolve);
@@ -1329,7 +1334,23 @@
 
     async function refreshStatus() {
       try {
-        const resp = await sendCommand("status");
+        const resp = await sendCommand("status", (response) =>
+          isStatusResponse(response) || isErrorResponse(response)
+        );
+        if (isErrorResponse(resp)) throw new Error(resp.error || "STATUS failed");
+        if (!resp.version) {
+          try {
+            const versionResp = await sendCommand("version", (response) =>
+              isErrorResponse(response) ||
+              !!(response && typeof response === "object" && "version" in response)
+            );
+            if (!isErrorResponse(versionResp) && versionResp.version) {
+              resp.version = versionResp.version;
+            }
+          } catch (_) {
+            // Some pre-version firmware does not implement VERSION.
+          }
+        }
         updateStatusUI(resp);
       } catch (err) {
         appendLog(`Status error: ${err.message}`, true);
@@ -1546,11 +1567,19 @@
 
     // helper to keep compatibility if a command returns status-like JSON
     function updateStatusUIFromResponseIfStatus(resp) {
-      if (resp && typeof resp === "object" && "led" in resp && "ditUsage" in resp) {
+      if (isStatusResponse(resp)) {
         updateStatusUI(resp);
         return true;
       }
       return false;
+    }
+
+    function isStatusResponse(resp) {
+      return !!(resp && typeof resp === "object" && "led" in resp && "ditUsage" in resp);
+    }
+
+    function isErrorResponse(resp) {
+      return !!(resp && typeof resp === "object" && "error" in resp);
     }
 
     // Firmware checker utilities
