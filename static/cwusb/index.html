@@ -289,23 +289,6 @@
       word-break: break-word;
       white-space: pre-wrap;
     }
-    .mode-warning {
-      margin: 8px 0 10px;
-      padding: 8px 10px;
-      border-radius: 8px;
-      border: 1px solid #f59e0b;
-      background: #fffbeb;
-      color: #92400e;
-      font-size: 13px;
-    }
-    :root[data-theme="dark"] .mode-warning {
-      border-color: #f59e0b;
-      background: #3b2a07;
-      color: #fcd34d;
-    }
-    .hidden {
-      display: none;
-    }
     .key-input {
       max-width: 140px;
     }
@@ -476,7 +459,8 @@
       margin: 12px 0 0;
       border: 1px solid var(--card-border);
       border-radius: 10px;
-      overflow: hidden;
+      overflow-x: auto;
+      overflow-y: hidden;
     }
     .fw-list table {
       width: 100%;
@@ -558,14 +542,12 @@
         <button id="connectBtn" class="connect-btn disconnected">Connect</button>
       </div>
     </div>
-    <div id="connectHint" class="muted" style="margin-top: 8px;">
-      Connect first to enable settings, diagnostics, and firmware update actions.
-    </div>
     <div class="row" style="flex-direction: column; align-items: flex-start; gap: 4px; margin-top: 6px;">
       <span id="fwVersionText" class="muted">Firmware: unknown</span>
+      <span id="configVersionText" class="muted">Config: unknown</span>
       <span id="serialText" class="muted">Serial: unknown</span>
       <div class="row" style="gap:8px; align-items:center;">
-        <button id="fwUpdateBtn" class="secondary" disabled>Firmware update...</button>
+        <button id="fwUpdateBtn" class="secondary" style="display:none;">Update firmware</button>
       </div>
     </div>
   </section>
@@ -647,7 +629,7 @@
         <div>
           <label for="usbModeSelect">USB mode
             <span class="tooltip">?
-              <span class="tooltiptext">HID (keyboard), MIDI (WebMIDI-friendly), or AUTO (start as MIDI, fall back to HID if needed).</span>
+              <span class="tooltiptext">HID (keyboard), MIDI (WebMIDI-friendly), or AUTO (start as HID and switch to MIDI when MIDI traffic is received). An open MIDI browser tab can trigger AUTO in the background.</span>
             </span>
           </label>
           <div class="row" style="align-items:center;">
@@ -661,35 +643,32 @@
             <span id="activeModePill" class="pill invert">HID</span>
           </div>
         </div>
-        <div>
-          <label for="profileSelect">MIDI profile
+        <div id="modeGroup">
+          <label for="modeSelect">Adapter mode
             <span class="tooltip">?
-              <span class="tooltiptext">Vail profile uses notes 1/2. SmartSDR profile defaults to notes 20/21 for CW Dit/CW Dah mapping.</span>
+              <span class="tooltiptext">High-level mode for host integration. Requires protocol support from firmware.</span>
             </span>
           </label>
           <div class="row" style="align-items:center;">
-            <select id="profileSelect" disabled>
-              <option value="vail">Vail-compatible</option>
-              <option value="smartsdr">SmartSDR</option>
+            <select id="modeSelect" disabled>
+              <option value="keyboard_midi">Keyboard/MIDI</option>
+              <option value="vail_morse">Vail Morse</option>
+              <option value="smartsdr_serial_macos">SmartSDR serial macOS</option>
             </select>
-            <span id="profilePill" class="pill">VAIL</span>
           </div>
         </div>
-        <div>
-          <label>MIDI notes (dit / dah)
+        <div id="midiProfileGroup">
+          <label for="midiProfileSelect">MIDI profile
             <span class="tooltip">?
-              <span class="tooltiptext">Used in MIDI mode. SmartSDR learns these as CW Dit/CW Dah.</span>
+              <span class="tooltiptext">Profile only applies when USB mode is MIDI/AUTO. AUTO detection is reserved for future firmware behavior.</span>
             </span>
           </label>
-          <div class="row">
-            <div class="key-field">
-              <input id="midiDitNoteInput" class="key-input" type="number" min="0" max="127" step="1" placeholder="20" disabled />
-              <span id="midiDitNoteLabel" class="hint">Dit note: -</span>
-            </div>
-            <div class="key-field">
-              <input id="midiDahNoteInput" class="key-input" type="number" min="0" max="127" step="1" placeholder="21" disabled />
-              <span id="midiDahNoteLabel" class="hint">Dah note: -</span>
-            </div>
+          <div class="row" style="align-items:center;">
+            <select id="midiProfileSelect" disabled>
+              <option value="vail">Vail</option>
+              <option value="auto">Auto (future detect)</option>
+            </select>
+            <span id="resolvedMidiProfilePill" class="pill">VAIL</span>
           </div>
         </div>
         <div>
@@ -713,9 +692,6 @@
       <button id="clearTestBtn" class="secondary" disabled>Clear</button>
     </div>
     <p class="muted">With the page focused, press the paddle/straight key. As a USB keyboard it will deliver normal key events; they appear below (along with other keyboard input).</p>
-    <div id="hidModeWarning" class="mode-warning hidden">
-      Device is currently in MIDI mode. HID key events will not appear here until the adapter returns to HID mode.
-    </div>
     <div id="testLog" class="test-log"></div>
   </section>
 
@@ -736,13 +712,13 @@
         <h2>Firmware Update</h2>
         <button id="fwCloseBtn" class="secondary">Close</button>
       </div>
-      <div class="fw-note">Follow these steps to update your adapter firmware. Read all the steps.</div>
+      <div class="fw-note">Follow these steps to update your adapter firmware.</div>
       <ol class="fw-steps">
         <li>Download the new firmware file from the list below.</li>
-        <li>Click the "Reboot to Update Mode" button below.</li>
-        <li>Use the file explorer in your OS and open the <strong>RPI-RP2</strong> drive.</li>
+        <li>Click “Reboot to Update Mode”.</li>
+        <li>In your file explorer, open the <strong>RPI-RP2</strong> drive.</li>
         <li>Copy the downloaded <strong>.uf2</strong> file into the drive.</li>
-        <li>Unplug and re‑plug the CW USB adapter.</li>
+        <li>Unplug and re‑plug the device.</li>
       </ol>
       <div id="fwList" class="fw-list"></div>
       <div class="fw-actions">
@@ -781,24 +757,31 @@
       clearLog: $("clearLogBtn"),
       clearTest: $("clearTestBtn"),
       usbModeSelect: $("usbModeSelect"),
-      profileSelect: $("profileSelect"),
-      midiDitNoteInput: $("midiDitNoteInput"),
-      midiDahNoteInput: $("midiDahNoteInput"),
+      modeSelect: $("modeSelect"),
+      midiProfileSelect: $("midiProfileSelect"),
       midiDebug: $("midiDebugBtn"),
       fwUpdate: $("fwUpdateBtn"),
       fwOverlay: $("fwOverlay"),
       fwClose: $("fwCloseBtn"),
-      fwOverlayDownload: $("fwOverlayDownload"),
       fwList: $("fwList"),
       fwReboot: $("fwRebootBtn"),
       fwOverlayStatus: $("fwOverlayStatus"),
     };
     let captureTarget = null; // which key input is listening for a key press
     const FW_MANIFEST_URL = "firmware/manifest.json";
+    const LEGACY_RELEASED_CONFIG_VERSION = 12;
+    const FALLBACK_CAPS = {
+      protocolVersion: 1,
+      commands: [],
+      usbModes: ["hid", "midi", "auto"],
+      midiProfiles: ["vail"],
+      modes: [],
+    };
     let manifestEntries = null;
     let latestFirmware = null;
     let midiDebugEnabled = false;
     let isConnected = false;
+    let deviceCaps = null;
 
     function canUseSerial() {
       if (!("serial" in navigator)) return { ok: false, msg: "Web Serial not supported (use Chrome/Edge 89+)" };
@@ -806,6 +789,40 @@
       const secure = window.isSecureContext || host === "localhost" || host === "127.0.0.1";
       if (!secure) return { ok: false, msg: "Web Serial requires HTTPS or http://localhost" };
       return { ok: true };
+    }
+
+    function hasCommand(name) {
+      if (!deviceCaps || !Array.isArray(deviceCaps.commands)) return false;
+      const normalized = String(name || "").trim().toUpperCase();
+      return deviceCaps.commands.some((cmd) => String(cmd).toUpperCase() === normalized);
+    }
+
+    function applyCapabilityUI() {
+      const hasMode = hasCommand("MODE?");
+      const hasMidiProfile = hasCommand("MIDI_PROFILE?");
+      buttons.modeSelect.disabled = !isConnected || !hasMode;
+      buttons.midiProfileSelect.disabled = !isConnected || !hasMidiProfile;
+      $("modeGroup").style.display = hasMode ? "" : "none";
+      $("midiProfileGroup").style.display = hasMidiProfile ? "" : "none";
+    }
+
+    async function refreshCapabilities() {
+      deviceCaps = null;
+      if (!writer) return;
+      try {
+        const caps = await sendCommand("caps?");
+        if (!caps || typeof caps !== "object") throw new Error("Invalid CAPS response");
+        deviceCaps = {
+          ...FALLBACK_CAPS,
+          ...caps,
+          commands: Array.isArray(caps.commands) ? caps.commands : [],
+        };
+        appendLog(`Protocol v${deviceCaps.protocolVersion ?? "?"} capabilities detected`);
+      } catch (_) {
+        deviceCaps = { ...FALLBACK_CAPS };
+        appendLog("CAPS? not available; using legacy command set");
+      }
+      applyCapabilityUI();
     }
 
     function setConnectedUI(connected, infoText = "") {
@@ -826,19 +843,15 @@
       $("dahInput").disabled = !connected;
       buttons.debounceSlider.disabled = !connected;
       buttons.usbModeSelect.disabled = !connected;
-      buttons.profileSelect.disabled = !connected;
-      buttons.midiDitNoteInput.disabled = !connected;
-      buttons.midiDahNoteInput.disabled = !connected;
-      buttons.fwUpdate.disabled = !connected;
       buttons.clearLog.disabled = false;
       buttons.clearTest.disabled = false;
-      $("connectHint").style.display = connected ? "none" : "block";
-      applyDisabledHints(connected);
       updateFirmwareStatus(latestStatus?.version);
       if (!connected) {
+        deviceCaps = null;
+        $("configVersionText").textContent = "Config: unknown";
         $("serialText").textContent = "Serial: unknown";
-        updateHidModeWarning(null, null);
       }
+      applyCapabilityUI();
     }
 
     function formatTime() {
@@ -934,6 +947,7 @@
         readLoopPromise = readLoop(readLoopAbort.signal);
         setConnectedUI(true);
         appendLog("Connected");
+        await refreshCapabilities();
         await refreshStatus();
       } catch (err) {
         appendLog(`Connect error: ${err.message}`, true);
@@ -1157,80 +1171,27 @@
       $("dahLabel").textContent = `Dah: ${dahName}${dahTok ? ` (${dahTok})` : ""}`;
     }
 
-    function updateMidiNoteLabels() {
-      const ditVal = Number(buttons.midiDitNoteInput.value);
-      const dahVal = Number(buttons.midiDahNoteInput.value);
-      const ditLabel = Number.isFinite(ditVal) ? ditVal : "-";
-      const dahLabel = Number.isFinite(dahVal) ? dahVal : "-";
-      $("midiDitNoteLabel").textContent = `Dit note: ${ditLabel}`;
-      $("midiDahNoteLabel").textContent = `Dah note: ${dahLabel}`;
-    }
-
-    function updateHidModeWarning(activeMode, usbMode) {
-      const warning = $("hidModeWarning");
-      if (!warning) return;
-      if (activeMode === "midi") {
-        let msg = "Device is currently in MIDI mode. HID key events will not appear here until the adapter returns to HID mode.";
-        if (usbMode === "auto") {
-          msg += " In AUTO mode, MIDI can latch after MIDI traffic until reboot/power-cycle or explicit USB mode change.";
-        }
-        warning.textContent = msg;
-        warning.classList.remove("hidden");
+    function updateFirmwareStatus(deviceVersion) {
+      const updateBtn = buttons.fwUpdate;
+      if (!deviceVersion) {
+        updateBtn.style.display = "none";
+        return;
+      }
+      if (!latestFirmware || !latestFirmware.version) {
+        updateBtn.style.display = "none";
+        return;
+      }
+      if (String(deviceVersion).trim() === String(latestFirmware.version).trim()) {
+        updateBtn.style.display = "none";
       } else {
-        warning.classList.add("hidden");
+        updateBtn.style.display = isConnected ? "inline-block" : "none";
       }
     }
 
-    function updateFirmwareStatus(deviceVersion) {
-      const updateBtn = buttons.fwUpdate;
-      updateBtn.textContent = "Firmware update...";
-    }
-
-    function applyDisabledHints(connected) {
-      const msg = "Connect first";
-      const controls = [
-        buttons.identify,
-        buttons.refresh,
-        buttons.factory,
-        buttons.ledToggle,
-        buttons.brightnessSlider,
-        buttons.colorInput,
-        buttons.defaultKeys,
-        buttons.swapKeys,
-        $("ditInput"),
-        $("dahInput"),
-        buttons.debounceSlider,
-        buttons.usbModeSelect,
-        buttons.profileSelect,
-        buttons.midiDitNoteInput,
-        buttons.midiDahNoteInput,
-        buttons.fwUpdate,
-      ];
-      controls.forEach((el) => {
-        if (!el) return;
-        if (!connected) {
-          el.title = msg;
-        } else if (el.title === msg) {
-          el.removeAttribute("title");
-        }
-      });
-    }
-
     function populateFirmwareOverlay() {
-      const overlayLink = buttons.fwOverlayDownload;
       const status = buttons.fwOverlayStatus;
       status.textContent = "";
-      if (overlayLink && latestFirmware && latestFirmware.version) {
-        const href = latestFirmware.url || `firmware/${latestFirmware.name || ""}`;
-        overlayLink.href = href;
-        overlayLink.download = latestFirmware.name || "firmware.uf2";
-        overlayLink.style.pointerEvents = "auto";
-        overlayLink.style.opacity = "1";
-      } else if (overlayLink) {
-        overlayLink.removeAttribute("href");
-        overlayLink.removeAttribute("download");
-        overlayLink.style.pointerEvents = "none";
-        overlayLink.style.opacity = "0.6";
+      if (!latestFirmware || !latestFirmware.version) {
         status.textContent = "Download unavailable. Firmware manifest could not be loaded.";
       }
       renderFirmwareList();
@@ -1242,10 +1203,10 @@
         .filter((e) => e && typeof e === "object")
         .map((e) => {
           const name = String(e.name || "").trim();
-          const version = String(e.version || "").trim() || extractVersionFromName(name) || "unknown";
+          const version = String(e.version || "").trim() || "unknown";
           const url = String(e.url || (name ? `firmware/${name}` : "")).trim();
-          const channel = String(e.channel || "").trim().toLowerCase() || (name.toLowerCase().includes("beta") ? "beta" : "stable");
-          const board = String(e.board || "").trim() || (name.toLowerCase().includes("picozero") ? "picozero" : "pico");
+          const channel = String(e.channel || "").trim().toLowerCase() || "stable";
+          const board = String(e.board || "").trim() || "unknown";
           const date = String(e.date || "").trim() || "n/a";
           return { ...e, name, version, url, channel, board, date };
         })
@@ -1254,9 +1215,7 @@
 
     function resolveLatestFirmware(entries, latestRef) {
       if (!entries || !entries.length) return null;
-      if (!latestRef) return pickLatest(entries);
-      if (typeof latestRef === "object") return latestRef;
-      const key = String(latestRef).trim();
+      const key = String(latestRef || "").trim();
       if (!key) return pickLatest(entries);
       const found = entries.find((e) =>
         String(e.version || "") === key ||
@@ -1344,27 +1303,26 @@
       if (typeof data.activeMode === "string") {
         $("activeModePill").textContent = data.activeMode.toUpperCase();
       }
-      updateHidModeWarning(
-        typeof data.activeMode === "string" ? data.activeMode.toLowerCase() : null,
-        typeof data.usbMode === "string" ? data.usbMode.toLowerCase() : null
-      );
+      if (typeof data.mode === "string") {
+        buttons.modeSelect.value = data.mode;
+      }
       if (typeof data.midiProfile === "string") {
-        buttons.profileSelect.value = data.midiProfile;
-        $("profilePill").textContent = data.midiProfile.toUpperCase();
+        buttons.midiProfileSelect.value = data.midiProfile;
       }
-      if (typeof data.midiDitNote !== "undefined") {
-        buttons.midiDitNoteInput.value = data.midiDitNote;
+      if (typeof data.resolvedMidiProfile === "string") {
+        $("resolvedMidiProfilePill").textContent = data.resolvedMidiProfile.toUpperCase();
       }
-      if (typeof data.midiDahNote !== "undefined") {
-        buttons.midiDahNoteInput.value = data.midiDahNote;
-      }
-      updateMidiNoteLabels();
       if (typeof data.color !== "undefined") {
         const hex = `#${data.color.toString(16).padStart(6, "0")}`;
         buttons.colorInput.value = hex;
         $("colorValue").textContent = hex;
       }
       $("fwVersionText").textContent = data.version ? `Firmware: ${data.version}` : "Firmware: (unknown)";
+      const configVersion = (typeof data.configVersion !== "undefined")
+        ? data.configVersion
+        : (data.version ? LEGACY_RELEASED_CONFIG_VERSION : null);
+      $("configVersionText").textContent =
+        configVersion !== null ? `Config: ${configVersion}` : "Config: (unknown)";
       $("serialText").textContent = data.serial ? `Serial: ${data.serial}` : "Serial: (unknown)";
       updateFirmwareStatus(data.version);
     }
@@ -1565,36 +1523,26 @@
         appendLog(`USB mode error: ${err.message}`, true);
       }
     });
-    buttons.profileSelect.addEventListener("change", async (e) => {
-      const profile = e.target.value;
-      if (!["vail", "smartsdr"].includes(profile)) return;
+    buttons.modeSelect.addEventListener("change", async (e) => {
+      const mode = e.target.value;
+      if (!["keyboard_midi", "vail_morse", "smartsdr_serial_macos"].includes(mode)) return;
       try {
-        await sendCommand(`profile ${profile}`);
+        await sendCommand(`mode ${mode}`);
         await refreshStatus();
       } catch (err) {
-        appendLog(`Profile error: ${err.message}`, true);
+        appendLog(`Mode error: ${err.message}`, true);
       }
     });
-
-    async function commitMidiNote(side) {
-      const input = side === "dit" ? buttons.midiDitNoteInput : buttons.midiDahNoteInput;
-      const val = Number(input.value);
-      if (!Number.isInteger(val) || val < 0 || val > 127) {
-        appendLog("MIDI note must be 0-127", true);
-        return;
-      }
+    buttons.midiProfileSelect.addEventListener("change", async (e) => {
+      const profile = e.target.value;
+      if (!["vail", "auto"].includes(profile)) return;
       try {
-        await sendCommand(`midinote ${side} ${val}`);
+        await sendCommand(`midi_profile ${profile}`);
         await refreshStatus();
       } catch (err) {
-        appendLog(`MIDINOTE error: ${err.message}`, true);
+        appendLog(`MIDI profile error: ${err.message}`, true);
       }
-    }
-
-    buttons.midiDitNoteInput.addEventListener("input", updateMidiNoteLabels);
-    buttons.midiDahNoteInput.addEventListener("input", updateMidiNoteLabels);
-    buttons.midiDitNoteInput.addEventListener("change", async () => { await commitMidiNote("dit"); });
-    buttons.midiDahNoteInput.addEventListener("change", async () => { await commitMidiNote("dah"); });
+    });
 
     // helper to keep compatibility if a command returns status-like JSON
     function updateStatusUIFromResponseIfStatus(resp) {
@@ -1633,15 +1581,9 @@
         const resp = await fetch(FW_MANIFEST_URL, { cache: "no-store" });
         if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
         const data = await resp.json();
-        if (Array.isArray(data)) {
-          manifestEntries = normalizeManifestEntries(data);
-          latestFirmware = pickLatest(manifestEntries);
-        } else if (data && typeof data === "object" && Array.isArray(data.firmwares)) {
+        if (data && typeof data === "object" && Array.isArray(data.firmwares)) {
           manifestEntries = normalizeManifestEntries(data.firmwares);
           latestFirmware = resolveLatestFirmware(manifestEntries, data.latest);
-        } else if (data && typeof data === "object" && data.version) {
-          manifestEntries = normalizeManifestEntries([data]);
-          latestFirmware = manifestEntries[0] || data;
         } else {
           manifestEntries = null;
           latestFirmware = null;
@@ -1663,11 +1605,6 @@
 
 
     // Initial UI
-    buttons.profileSelect.value = "vail";
-    buttons.midiDitNoteInput.value = "1";
-    buttons.midiDahNoteInput.value = "2";
-    $("profilePill").textContent = "VAIL";
-    updateMidiNoteLabels();
     setConnectedUI(false);
     const ok = canUseSerial();
     if (!ok.ok) {
